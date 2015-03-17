@@ -70,7 +70,7 @@ BigInteger::BigInteger(const std::string& input)
 		}
 
 		if(!std::isdigit(*iterator))
-			throw "BigInteger::BigInteger(const std::string&) : not a digit";
+			throw "BigInteger::BigInteger(const std::string&) -> not a digit";
 
 		buffer = (int)(*iterator-'0');
 		for(int i=0; i<counter; i++)
@@ -481,6 +481,9 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 
 void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 {
+	if (rhs.isZero()) 
+		throw "BigInteger::divide -> divide by zero";
+
 
 }
 
@@ -528,6 +531,11 @@ BigInteger::Compare BigInteger::compareMagnitude(const BigInteger& lhs, const Bi
 	}
 
 	return EQUAL;
+}
+
+inline bool BigInteger::isZero()
+{
+	return sign == BigInteger::ZERO;
 }
 
 void BigInteger::removeTrailingZeros()
