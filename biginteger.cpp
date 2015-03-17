@@ -586,6 +586,11 @@ void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 
 void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 {
+	#ifdef DEBUG
+	std::cout << "=====" << std::endl;
+	std::cout << "multiply() called" << std::endl;
+	#endif
+
 	// empty the storage for new value
 	storage.empty();
 
@@ -615,6 +620,10 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 		lh_obj = &lhs;
 		rh_obj = &rhs;
 	}
+
+	#ifdef DEBUG
+	std::cout << "lh_obj: " << *lh_obj << "; rh_obj: " << *rh_obj << std::endl;
+	#endif
 
 	// reserve the storage to maximum size
 	storage.reserve(lh_obj->storage.size() + rh_obj->storage.size());
@@ -660,39 +669,73 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 	//karatsuba(lhs, rhs);
 
 	//removeTrailingZeros();
+
+	#ifdef DEBUG
+	std::cout << "=====" << std::endl;
+	#endif
 }
 
 void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 {
+	#ifdef DEBUG
+	std::cout << "=====" << std::endl;
+	std::cout << "divide() called" << std::endl;
+	#endif
+
 	if (rhs.isZero()) 
 		throw "BigInteger::divide -> divide by zero";
 
 	// empty the storage for new value
 	storage.empty();
 
+	#ifdef DEBUG
+	std::cout << "storage emptied" << std::endl;
+	#endif
+
 	// case for (0/B) or (A/B while A<B, 0 since the output is a integer)
 	if(lhs.isZero() || compareMagnitude(lhs, rhs)==BigInteger::LESS)
 	{
+		#ifdef DEBUG
+		std::cout << "direct output 0, due to (0/b) or (a/b while a<b)" << std::endl;
+		#endif
+
 		sign = BigInteger::ZERO;
 		return;
 	}
 
-	BigInteger result(0), buffer = lhs;
+	BigInteger result(lhs), buffer(rhs), magnifier((int)BigInteger::Base);
 
-	while(buffer>CONSTANT_0)
+	#ifdef DEBUG
+	std::cout << "variable initialized" << std::endl;
+	#endif
+
+	// TODO: patch for zeros first
+	#ifdef DEBUG
+	std::cout << "patching the rhs till the magnitude match lhs" << std::endl;
+	#endif
+
+	for(int patchLength = 0; patchLength < lhs.storage.size()-rhs.storage.size(); patchLength++)
 	{
-		std::cout << "current buffer " << buffer << ", result " << result << std::endl;
-
-		buffer = buffer - rhs;
-		std::cout << "pass buffer = buffer - rhs" << std::endl;
-
-		result++;
-		std::cout << "pass result = result + CONSTANT_1" << std::endl;
+		#ifdef DEBUG
+		std::cout << "current buffer is " << buffer << std::endl;
+		#endif
+		buffer *= magnifier;
 	}
 
-	std::cout << "complete subtraction" << std::endl;
+	#ifdef DEBUG
+	std::cout << "...patched" << std::endl;
+	std::cout << "now subtract the original value, result is "; 
+	#endif
 
-	operator = (result);
+	result -= buffer;
+
+	#ifdef DEBUG
+	std::cout << result << std::endl;
+	#endif
+
+	#ifdef DEBUG
+	std::cout << "=====" << std::endl;
+	#endif
 }
 
 void BigInteger::modulus(const BigInteger& lhs, const BigInteger& rhs)
@@ -760,22 +803,21 @@ void BigInteger::removeTrailingZeros()
 
 int main()
 {
-	BigInteger a("1000"), b("5"), c;
+	BigInteger a("3"), b("5"), c;
+
+	BigInteger magnifier((int)BigInteger::Base);
+
 
 	std::cout << "a:\t" << a << std::endl;
 	std::cout << "b:\t" << b << std::endl;
+	std::cout << "magnifier:\t" << magnifier << std::endl;
 
-	std::cout << "a+b:\t" << (a+b) << std::endl;
-
-	a-=b;
-	std::cout << "a+=b, a:\t" << a << std::endl;
-
-	return 0;
+	a *= magnifier;
+	std::cout << "magnified a: " << a << std::endl;
 
 	std::cout << "a+b:\t" << (a+b) << std::endl;
 	std::cout << "a-b:\t" << (a-b) << std::endl;
 	std::cout << "a*b:\t" << (a*b) << std::endl;
-
 	std::cout << "a/b:\t" << (a/b) << std::endl;
 
 	return 0;
