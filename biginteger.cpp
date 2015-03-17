@@ -130,6 +130,20 @@ inline BigInteger BigInteger::operator + (const BigInteger& rhs) const
 	return result;
 }
 
+inline BigInteger BigInteger::operator ++ () const
+{
+	BigInteger result;
+	result.add(*this, BigInteger::CONSTANT_1);
+	return result;
+}
+	
+inline BigInteger BigInteger::operator -- () const
+{
+	BigInteger result;
+	result.subtract(*this, BigInteger::CONSTANT_1);
+	return result;
+}
+
 inline BigInteger BigInteger::operator - (const BigInteger& rhs) const
 {
 	BigInteger result;
