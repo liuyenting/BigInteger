@@ -52,6 +52,12 @@ public:
 
 	// binary operator: comparison
 	bool operator > (const BigInteger&) const;
+	bool operator == (const BigInteger&) const;
+	bool operator < (const BigInteger&) const;
+	bool operator >= (const BigInteger&) const;
+	bool operator != (const BigInteger&) const;
+	bool operator <= (const BigInteger&) const;
+
 
 	// binary operator: stream and memroy operation
 	void operator = (const BigInteger&);

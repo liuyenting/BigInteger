@@ -186,7 +186,32 @@ inline void BigInteger::operator %= (const BigInteger& rhs)
 // binary operator: comparison
 bool BigInteger::operator > (const BigInteger& rhs) const
 {
+	return compare(*this, rhs) == BigInteger::GREATER;
+}
 
+bool BigInteger::operator == (const BigInteger& rhs) const
+{
+	return compare(*this, rhs) == BigInteger::EQUAL;
+}
+
+bool BigInteger::operator < (const BigInteger& rhs) const
+{
+	return compare(*this, rhs) == BigInteger::LESS;
+}
+
+bool BigInteger::operator >= (const BigInteger& rhs) const
+{
+	return operator > (rhs) || operator == (rhs);
+}
+
+bool BigInteger::operator != (const BigInteger& rhs) const
+{
+	return !operator == (rhs);
+}
+
+bool BigInteger::operator <= (const BigInteger& rhs) const
+{
+	return operator < (rhs) || operator == (rhs);
 }
 
 // binary operator: stream and memroy operation
@@ -493,6 +518,8 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		sign = BigInteger::ZERO;
 		return;
 	}
+
+
 }
 
 void BigInteger::modulus(const BigInteger& lhs, const BigInteger& rhs)
