@@ -415,13 +415,13 @@ void BigInteger::add(const BigInteger& lhs, const BigInteger& rhs)
 
 		BaseType carry = 0, buffer;
 		// iterate through rh_obj, add with lh_obj, and store into *this
-		for(std::vector<int>::size_type index = 0; index<rh_obj->storage.size() || carry!=0; index++) 
+		for(std::vector<int>::size_type index = 0; index<rh_obj->storage.size(); index++) 
 		{
 			// add the carry
 			buffer = lh_obj->storage[index] + carry;
 
 			// perform the actual addition
-			if(index<rh_obj->storage.size())
+			//if(index<rh_obj->storage.size())
 				buffer += rh_obj->storage[index];
 
 			// wrap the digit
@@ -431,6 +431,9 @@ void BigInteger::add(const BigInteger& lhs, const BigInteger& rhs)
 			// store back
 			storage[index] = buffer;
 		}
+
+		if(carry > 0)
+			storage.push_back(carry);
 	}
 	else
 	{
@@ -684,8 +687,13 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		std::cout << "current buffer " << buffer << ", result " << result << std::endl;
 
 		buffer = buffer - rhs;
-		result = result + CONSTANT_1;
+		std::cout << "pass buffer = buffer - rhs" << std::endl;
+
+		result++;
+		std::cout << "pass result = result + CONSTANT_1" << std::endl;
 	}
+
+	std::cout << "complete subtraction" << std::endl;
 
 	operator = (result);
 }
@@ -704,12 +712,12 @@ BigInteger::Compare BigInteger::compare(const BigInteger& lhs, const BigInteger&
 {
 	// compate sign first
 	if(lhs.sign > rhs.sign)
-		return GREATER;
+		return BigInteger::GREATER;
 	else if(lhs.sign < rhs.sign)
-		return LESS;
+		return BigInteger::LESS;
 
 	// compare by magnitude and ajust by the sign
-	if(lhs.sign == POSITIVE)
+	if(lhs.sign == BigInteger::POSITIVE)
 		return compareMagnitude(lhs, rhs);
 	else
 		return compareMagnitude(rhs, lhs);
@@ -718,9 +726,9 @@ BigInteger::Compare BigInteger::compare(const BigInteger& lhs, const BigInteger&
 BigInteger::Compare BigInteger::compareMagnitude(const BigInteger& lhs, const BigInteger& rhs) const
 {
 	if(lhs.storage.size() > rhs.storage.size())
-		return GREATER;
+		return BigInteger::GREATER;
 	else if(lhs.storage.size() < rhs.storage.size())
-		return LESS;
+		return BigInteger::LESS;
 	else
 	{
 		BaseType lh_group, rh_group;
@@ -728,9 +736,9 @@ BigInteger::Compare BigInteger::compareMagnitude(const BigInteger& lhs, const Bi
 		rh_group = rhs.storage.back();
 
 		if(lh_group > rh_group)
-			return GREATER;
+			return BigInteger::GREATER;
 		else if(lh_group < rh_group)
-			return LESS;
+			return BigInteger::LESS;
 	}
 
 	return EQUAL;
@@ -748,31 +756,26 @@ void BigInteger::removeTrailingZeros()
 
 	// set sign flag to zero if the storage is empty
 	if(storage.empty())
-		sign = ZERO;
+		sign = BigInteger::ZERO;
 
 	storage.shrink_to_fit();
 }
 
 int main()
 {
-	BigInteger a("1"), b("50"), c;
+	BigInteger a("1000"), b("5"), c;
 
 	std::cout << "a:\t" << a << std::endl;
 	std::cout << "b:\t" << b << std::endl;
 
-	std::cout << "fist time a-- is ";
-	a++;
-	std::cout << a << std::endl;
-
-	std::cout << "second time --a is ";
-	++a;
-	std::cout << a << std::endl;
+	//a+=b;
+	//std::cout << "a+=b, a:\t" << a << std::endl;
 
 	std::cout << "a+b:\t" << (a+b) << std::endl;
 	std::cout << "a-b:\t" << (a-b) << std::endl;
 	std::cout << "a*b:\t" << (a*b) << std::endl;
 
-	//std::cout << "a/b:\t" << (a/b) << std::endl;
+	std::cout << "a/b:\t" << (a/b) << std::endl;
 
 	return 0;
 }
