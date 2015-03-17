@@ -519,18 +519,24 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		return;
 	}
 
+	*this = lhs;
 	BigInteger result(1), buffer = rhs;
+
 	// patching the lhs and rhs to the same length
 	for(int repeatTimes = lhs.storage.size()-rhs.storage.size(); repeatTimes>0; repeatTimes--)
 	{
 		buffer *= 10;
 		result *= 10;
 	}
-	lhs -= buffer;
+	*this -= buffer;
 
 	while(lhs>0)
 	{
+		*this -= rhs; 
+		result++;
 	}
+
+	*this = result--;
 }
 
 void BigInteger::modulus(const BigInteger& lhs, const BigInteger& rhs)
@@ -598,7 +604,7 @@ void BigInteger::removeTrailingZeros()
 
 int main()
 {
-	BigInteger a("98765474853236789290987654323456789876543234"), b("9876567654345678"), c;
+	BigInteger a("100"), b("5"), c;
 
 	std::cout << "a:\t" << a << std::endl;
 	std::cout << "b:\t" << b << std::endl;
