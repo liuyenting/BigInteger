@@ -476,7 +476,7 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 	// using karatsuba algorithm
 	//karatsuba(lhs, rhs);
 
-	removeTrailingZeros();
+	//removeTrailingZeros();
 }
 
 void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
