@@ -484,7 +484,15 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 	if (rhs.isZero()) 
 		throw "BigInteger::divide -> divide by zero";
 
+	// empty the storage for new value
+	storage.empty();
 
+	// case for (0/B) or (A/B while A<B, 0 since the output is a integer)
+	if(lhs.sign==BigInteger::ZERO || lhs.storage.size()<rhs.storage.size())
+	{
+		sign = BigInteger::ZERO;
+		return;
+	}
 }
 
 void BigInteger::modulus(const BigInteger& lhs, const BigInteger& rhs)
