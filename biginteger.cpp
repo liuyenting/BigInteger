@@ -272,20 +272,12 @@ inline BigInteger BigInteger::operator % (const BigInteger& rhs) const
 // binary operator: arithmetic (continue)
 inline void BigInteger::operator += (const BigInteger& rhs)
 {
-	std::cout << "operator+=: original value is " << *this << " + " << rhs << std::endl;
-
 	add(*this, rhs);
-
-	std::cout << "result is " << *this << std::endl;
 }
 
 inline void BigInteger::operator -= (const BigInteger& rhs)
 {
-	std::cout << "operator -=, original value is " << *this << ", rhs is " << rhs << std::endl;
-
 	subtract(*this, rhs);
-
-	std::cout << "after the operation, the value is " << *this << std::endl;
 }	
 inline void BigInteger::operator *= (const BigInteger& rhs) 
 {
@@ -384,6 +376,11 @@ std::ostream& operator << (std::ostream& stream, const BigInteger& rhs)
 //
 void BigInteger::add(const BigInteger& lhs, const BigInteger& rhs)
 {
+	#ifdef DEBUG
+	std::cout << "=====" << std::endl;
+	std::cout << "add() called" << std::endl;
+	#endif
+
 	if(lhs.sign == BigInteger::ZERO)
 	{
 		operator = (rhs);
@@ -407,11 +404,16 @@ void BigInteger::add(const BigInteger& lhs, const BigInteger& rhs)
 		lh_obj = &lhs;
 		rh_obj = &rhs;
 	}
+
+	#ifdef DEBUG
+	std::cout << "lh_obj: " << *lh_obj << "; rh_obj: " << *rh_obj << std::endl;
+	#endif
 	
 	if(lhs.sign == rhs.sign)
 	{
-		// duplicate the longer one
-		operator = (*lh_obj);
+		// duplicate the longer one, and ignore if it's itself
+		if(lh_obj != this)
+			operator = (*lh_obj);
 
 		BaseType carry = 0, buffer;
 		// iterate through rh_obj, add with lh_obj, and store into *this
@@ -452,6 +454,11 @@ void BigInteger::add(const BigInteger& lhs, const BigInteger& rhs)
 			operator - ();
 		}
 	}
+
+	#ifdef DEBUG
+	std::cout << "add(): result is " << *this << std::endl;
+	std::cout << "=====" << std::endl;
+	#endif
 }
 
 void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
@@ -505,8 +512,9 @@ void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 		std::cout << "lh_obj.sign = rh_obj.sign" << std::endl;
 		#endif
 
-		// duplicate the longer one
-		operator = (*lh_obj);
+		// duplicate the longer one, and ignore if it's itself
+		if(lh_obj != this)
+			operator = (*lh_obj);
 
 		BaseType carry = 0, buffer;
 		bool needCarry;
@@ -543,8 +551,6 @@ void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 			// store back
 			storage[index] = buffer;
 
-			std::cout << "store back complete" << std::endl;
-
 			// refresh the carry
 			carry = (needCarry)?1:0;
 		}
@@ -567,18 +573,9 @@ void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 		}
 	}
 
-	std::cout << "before the negate statement" << std::endl;
-
 	// negate the result when lhs and rhs are swapped
 	if(lh_obj != &lhs)
-	{
-		std::cout << "swapped..." << std::endl;
-
 		operator - ();
-		//*this = -(*this);
-	}
-
-	std::cout << "complete passing the if-neg statement" << std::endl;
 
 	removeTrailingZeros();
 
@@ -768,8 +765,12 @@ int main()
 	std::cout << "a:\t" << a << std::endl;
 	std::cout << "b:\t" << b << std::endl;
 
-	//a+=b;
-	//std::cout << "a+=b, a:\t" << a << std::endl;
+	std::cout << "a+b:\t" << (a+b) << std::endl;
+
+	a-=b;
+	std::cout << "a+=b, a:\t" << a << std::endl;
+
+	return 0;
 
 	std::cout << "a+b:\t" << (a+b) << std::endl;
 	std::cout << "a-b:\t" << (a-b) << std::endl;
