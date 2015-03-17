@@ -192,7 +192,11 @@ inline void BigInteger::operator += (const BigInteger& rhs)
 
 inline void BigInteger::operator -= (const BigInteger& rhs)
 {
+	std::cout << "operator -=, original value is " << *this << ", rhs is " << rhs << std::endl;
+
 	subtract(*this, rhs);
+
+	std::cout << "after the operation, the value is " << *this << std::endl;
 }	
 inline void BigInteger::operator *= (const BigInteger& rhs) 
 {
@@ -458,7 +462,7 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 	storage.empty();
 
 	// set as 0 if either of them is 0
-	if(lhs.sign==BigInteger::ZERO || rhs.sign==BigInteger::ZERO)
+	if(lhs.isZero() || rhs.isZero())
 	{
 		sign = BigInteger::ZERO;
 		return;
@@ -539,30 +543,23 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 	storage.empty();
 
 	// case for (0/B) or (A/B while A<B, 0 since the output is a integer)
-	if(lhs.sign==BigInteger::ZERO || compareMagnitude(lhs, rhs)==BigInteger::LESS)
+	if(lhs.isZero() || compareMagnitude(lhs, rhs)==BigInteger::LESS)
 	{
 		sign = BigInteger::ZERO;
 		return;
 	}
 
-	*this = lhs;
-	BigInteger result(1), buffer = rhs;
+	BigInteger result(0), buffer = lhs;
 
-	// patching the lhs and rhs to the same length
-	for(int repeatTimes = lhs.storage.size()-rhs.storage.size(); repeatTimes>0; repeatTimes--)
+	while(buffer>CONSTANT_0)
 	{
-		buffer *= 10;
-		result *= 10;
-	}
-	*this -= buffer;
+		std::cout << "current buffer " << buffer << ", result " << result << std::endl;
 
-	while(lhs>0)
-	{
-		*this -= rhs; 
-		result++;
+		buffer = buffer - rhs;
+		result = result + CONSTANT_1;
 	}
 
-	*this = result--;
+	operator = (result);
 }
 
 void BigInteger::modulus(const BigInteger& lhs, const BigInteger& rhs)
@@ -630,7 +627,7 @@ void BigInteger::removeTrailingZeros()
 
 int main()
 {
-	BigInteger a("100"), b("5"), c;
+	BigInteger a("1000000"), b("5"), c;
 
 	std::cout << "a:\t" << a << std::endl;
 	std::cout << "b:\t" << b << std::endl;
