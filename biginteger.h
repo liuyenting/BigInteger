@@ -75,8 +75,8 @@ private:
 
 	void karatsuba(const BigInteger&, const BigInteger&);
 
-	Compare compare(const BigInteger&, const BigInteger&);
-	Compare compareMagnitude(const BigInteger&, const BigInteger&);
+	Compare compare(const BigInteger&, const BigInteger&) const;
+	Compare compareMagnitude(const BigInteger&, const BigInteger&) const;
 
 	inline bool isZero();
 

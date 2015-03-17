@@ -532,7 +532,7 @@ void BigInteger::karatsuba(const BigInteger& lhs, const BigInteger& rhs)
 
 }
 
-BigInteger::Compare BigInteger::compare(const BigInteger& lhs, const BigInteger& rhs)
+BigInteger::Compare BigInteger::compare(const BigInteger& lhs, const BigInteger& rhs) const
 {
 	// compate sign first
 	if(lhs.sign > rhs.sign)
@@ -547,7 +547,7 @@ BigInteger::Compare BigInteger::compare(const BigInteger& lhs, const BigInteger&
 		return compareMagnitude(rhs, lhs);
 }
 
-BigInteger::Compare BigInteger::compareMagnitude(const BigInteger& lhs, const BigInteger& rhs)
+BigInteger::Compare BigInteger::compareMagnitude(const BigInteger& lhs, const BigInteger& rhs) const
 {
 	if(lhs.storage.size() > rhs.storage.size())
 		return GREATER;
@@ -568,7 +568,7 @@ BigInteger::Compare BigInteger::compareMagnitude(const BigInteger& lhs, const Bi
 	return EQUAL;
 }
 
-inline bool BigInteger::isZero()
+inline bool BigInteger::isZero() const
 {
 	return sign == BigInteger::ZERO;
 }
