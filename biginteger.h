@@ -35,10 +35,12 @@ public:
 
 	// unary operator
 	inline BigInteger operator - () const;
-	inline BigInteger& operator ++ ();
-	inline BigInteger operator ++ (int);
-	inline BigInteger& operator -- ();
-	inline BigInteger operator -- (int);
+	inline BigInteger& operator - () ;
+
+	inline void operator ++ ();
+	inline void operator ++ (int);
+	inline void operator -- ();
+	inline void operator -- (int);
 	
 	// binary operator: arithmetic
 	inline BigInteger operator + (const BigInteger&) const;

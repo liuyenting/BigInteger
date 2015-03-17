@@ -26,7 +26,7 @@ BigInteger::BigInteger(const int& input)
 	else
 		sign = NEGATIVE;
 
-	while(temp != 0)
+	while(temp > 0)
 	{
 		storage.push_back(temp%BigInteger::Base);
 		temp /= BigInteger::Base;
@@ -122,6 +122,12 @@ inline BigInteger BigInteger::operator - () const
 	return result;
 }
 
+inline BigInteger& BigInteger::operator - () 
+{
+	operator - ();
+	return *this;
+}
+
 // binary operator: arithmetic
 inline BigInteger BigInteger::operator + (const BigInteger& rhs) const
 {
@@ -130,30 +136,94 @@ inline BigInteger BigInteger::operator + (const BigInteger& rhs) const
 	return result;
 }
 
-inline BigInteger& BigInteger::operator ++ ()
+inline void BigInteger::operator ++ ()
 {
-	add(*this, CONSTANT_1);
-	return *this;
+	if(isZero())
+	{
+		// 0 -> 1
+		sign = BigInteger::POSITIVE;
+		storage.push_back(1);
+		return;
+	}
+	else if(sign==BigInteger::NEGATIVE && storage.size()==1 && storage[0]==1)
+	{
+		// -1 -> 0
+		sign = BigInteger::ZERO;
+		storage.empty();
+		return;
+	}
+
+	// increment for one
+	storage[0]++;
+
+	// wrap for all the carries
+	BaseType carry = 0;
+	for(std::vector<int>::size_type index = 0; index<storage.size(); index++) 
+	{
+		storage[index] += carry;
+		carry = storage[index]/BigInteger::Base;
+		storage[index] %= BigInteger::Base;
+	}
+
+	if(carry != 0)
+		storage.push_back(carry);
 }
 
-inline BigInteger BigInteger::operator ++ (int)
+inline void BigInteger::operator ++ (int)
 {
-	BigInteger result(*this);
 	operator ++ ();
-	return result;
 }
 	
-inline BigInteger& BigInteger::operator -- ()
+inline void BigInteger::operator -- ()
 {
-	subtract(*this, CONSTANT_1);
-	return *this;
+	if(isZero())
+	{
+		// 0 -> -1
+		sign = BigInteger::NEGATIVE;
+		storage.push_back(1);
+		return;
+	}
+	else if(sign==BigInteger::POSITIVE && storage.size()==1 && storage[0]==1)
+	{
+		// 1 -> 0
+		sign = BigInteger::ZERO;
+		storage.empty();
+		return;
+	}
+
+	BaseType carry = 0;
+
+	// decrement for one
+	if(storage[0] == 0)
+	{
+		carry = 1;
+		storage[0] = BigInteger::Base-1;
+	}
+	else
+		storage[0]--;
+
+	// wrap for all the carries
+	for(std::vector<int>::size_type index = 1; index<storage.size(); index++) 
+	{
+		if(storage[index]<carry)
+		{
+			storage[index] += BigInteger::Base;
+			storage[index] -= carry;
+			carry = 1;
+		}
+		else
+		{
+			storage[index] -= carry;
+			carry = 0;
+		}
+	}
+
+	removeTrailingZeros();
 }
 
-inline BigInteger BigInteger::operator -- (int)
+inline void BigInteger::operator -- (int)
 {
-	BigInteger result(*this);
 	operator -- ();
-	return result;
 }
 
 inline BigInteger BigInteger::operator - (const BigInteger& rhs) const
@@ -187,7 +257,11 @@ inline BigInteger BigInteger::operator % (const BigInteger& rhs) const
 // binary operator: arithmetic (continue)
 inline void BigInteger::operator += (const BigInteger& rhs)
 {
+	std::cout << "operator+=: original value is " << *this << " + " << rhs << std::endl;
+
 	add(*this, rhs);
+
+	std::cout << "result is " << *this << std::endl;
 }
 
 inline void BigInteger::operator -= (const BigInteger& rhs)
@@ -627,15 +701,24 @@ void BigInteger::removeTrailingZeros()
 
 int main()
 {
-	BigInteger a("1000000"), b("5"), c;
+	BigInteger a("1"), b("50"), c;
 
 	std::cout << "a:\t" << a << std::endl;
 	std::cout << "b:\t" << b << std::endl;
 
+	std::cout << "fist time a-- is ";
+	a++;
+	std::cout << a << std::endl;
+
+	std::cout << "second time --a is ";
+	++a;
+	std::cout << a << std::endl;
+
 	std::cout << "a+b:\t" << (a+b) << std::endl;
 	std::cout << "a-b:\t" << (a-b) << std::endl;
 	std::cout << "a*b:\t" << (a*b) << std::endl;
-	std::cout << "a/b:\t" << (a/b) << std::endl;
+
+	//std::cout << "a/b:\t" << (a/b) << std::endl;
 
 	return 0;
 }
