@@ -35,6 +35,8 @@ public:
 
 	// unary operator
 	inline BigInteger operator - () const;
+	inline BigInteger operator ++ () const;
+	inline BigInteger operator -- () const;
 	
 	// binary operator: arithmetic
 	inline BigInteger operator + (const BigInteger&) const;
@@ -78,7 +80,7 @@ private:
 	Compare compare(const BigInteger&, const BigInteger&) const;
 	Compare compareMagnitude(const BigInteger&, const BigInteger&) const;
 
-	inline bool isZero();
+	inline bool isZero() const;
 
 	void removeTrailingZeros();
 };
