@@ -513,14 +513,24 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 	storage.empty();
 
 	// case for (0/B) or (A/B while A<B, 0 since the output is a integer)
-	if(lhs.sign==BigInteger::ZERO || lhs.storage.size()<rhs.storage.size())
+	if(lhs.sign==BigInteger::ZERO || compareMagnitude(lhs, rhs)==BigInteger::LESS)
 	{
 		sign = BigInteger::ZERO;
 		return;
 	}
 
-	BigInteger result;
+	BigInteger result(1), buffer = rhs;
+	// patching the lhs and rhs to the same length
+	for(int repeatTimes = lhs.storage.size()-rhs.storage.size(); repeatTimes>0; repeatTimes--)
+	{
+		buffer *= 10;
+		result *= 10;
+	}
+	lhs -= buffer;
 
+	while(lhs>0)
+	{
+	}
 }
 
 void BigInteger::modulus(const BigInteger& lhs, const BigInteger& rhs)
