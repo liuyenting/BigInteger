@@ -11,7 +11,7 @@
 //
 BigInteger::BigInteger()
 {
-
+	BigInteger(0);
 }
 
 BigInteger::BigInteger(const int& input)
@@ -519,6 +519,7 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		return;
 	}
 
+	BigInteger result;
 
 }
 
