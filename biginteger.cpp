@@ -110,8 +110,9 @@ BigInteger::BigInteger(const std::vector<BigInteger::BaseType>& input)
 }
 
 // unary operator
-inline BigInteger BigInteger::operator - () const
+inline void BigInteger::operator - ()
 {
+	/*
 	BigInteger result = *this;
 
 	if(result.sign == POSITIVE)
@@ -120,13 +121,27 @@ inline BigInteger BigInteger::operator - () const
 		result.sign = POSITIVE;
 
 	return result;
+	*/
+
+	if(sign == BigInteger::POSITIVE)
+		sign = BigInteger::NEGATIVE;
+	else if(sign == BigInteger::NEGATIVE)
+		sign = BigInteger::POSITIVE;
 }
 
-inline BigInteger& BigInteger::operator - () 
+inline BigInteger BigInteger::operator - () const
+{
+	BigInteger result(*this);
+	result.operator - ();
+	return result;
+}
+/*
+inline void BigInteger::operator - () 
 {
 	operator - ();
-	return *this;
+	//return *this;
 }
+*/
 
 // binary operator: arithmetic
 inline BigInteger BigInteger::operator + (const BigInteger& rhs) const
@@ -430,21 +445,36 @@ void BigInteger::add(const BigInteger& lhs, const BigInteger& rhs)
 
 			// subtract as +LARGE +SMALL
 			subtract(-(*lh_obj), *rh_obj);
-			*this = -(*this);
+			//*this = -(*this);
+			operator - ();
 		}
 	}
 }
 
 void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 {
+	#ifdef DEBUG
+	std::cout << "=====" << std::endl;
+	std::cout << "subtract() called" << std::endl;
+	#endif
+
 	if(lhs.sign == ZERO)
 	{
+		#ifdef DEBUG
+		std::cout << "...lhs is ZERO" << std::endl;
+		#endif
+
 		operator = (rhs);
-		*this = -(*this);
+		//*this = -(*this);
+		operator - ();
 		return;
 	}
 	else if(rhs.sign == ZERO)
 	{
+		#ifdef DEBUG
+		std::cout << "...rhs is ZERO" << std::endl;
+		#endif
+
 		operator = (lhs);
 		return;
 	}
@@ -461,9 +491,17 @@ void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 		lh_obj = &lhs;
 		rh_obj = &rhs;
 	}
+
+	#ifdef DEBUG
+	std::cout << "lh_obj: " << *lh_obj << "; rh_obj: " << *rh_obj << std::endl;
+	#endif
 	
 	if(lhs.sign == rhs.sign)
 	{
+		#ifdef DEBUG
+		std::cout << "lh_obj.sign = rh_obj.sign" << std::endl;
+		#endif
+
 		// duplicate the longer one
 		operator = (*lh_obj);
 
@@ -502,6 +540,8 @@ void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 			// store back
 			storage[index] = buffer;
 
+			std::cout << "store back complete" << std::endl;
+
 			// refresh the carry
 			carry = (needCarry)?1:0;
 		}
@@ -519,15 +559,29 @@ void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 
 			// add as +LARGE +SMALL
 			add(-(*lh_obj), *rh_obj);
-			*this = -(*this);
+			//*this = -(*this);
+			operator - ();
 		}
 	}
 
+	std::cout << "before the negate statement" << std::endl;
+
 	// negate the result when lhs and rhs are swapped
 	if(lh_obj != &lhs)
-		*this = -(*this);
+	{
+		std::cout << "swapped..." << std::endl;
+
+		operator - ();
+		//*this = -(*this);
+	}
+
+	std::cout << "complete passing the if-neg statement" << std::endl;
 
 	removeTrailingZeros();
+
+	#ifdef DEBUG
+	std::cout << "=====" << std::endl;
+	#endif
 }
 
 void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)

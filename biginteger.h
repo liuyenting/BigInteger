@@ -34,8 +34,8 @@ public:
 
 
 	// unary operator
+	inline void operator - ();
 	inline BigInteger operator - () const;
-	inline BigInteger& operator - () ;
 
 	inline void operator ++ ();
 	inline void operator ++ (int);
