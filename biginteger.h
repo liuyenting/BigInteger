@@ -35,8 +35,10 @@ public:
 
 	// unary operator
 	inline BigInteger operator - () const;
-	inline BigInteger operator ++ () const;
-	inline BigInteger operator -- () const;
+	inline BigInteger& operator ++ ();
+	inline BigInteger operator ++ (int);
+	inline BigInteger& operator -- ();
+	inline BigInteger operator -- (int);
 	
 	// binary operator: arithmetic
 	inline BigInteger operator + (const BigInteger&) const;
@@ -84,5 +86,7 @@ private:
 
 	void removeTrailingZeros();
 };
+
+static BigInteger CONSTANT_1(1);
 
 #endif

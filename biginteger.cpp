@@ -130,17 +130,29 @@ inline BigInteger BigInteger::operator + (const BigInteger& rhs) const
 	return result;
 }
 
-inline BigInteger BigInteger::operator ++ () const
+inline BigInteger& BigInteger::operator ++ ()
 {
-	BigInteger result;
-	result.add(*this, BigInteger::CONSTANT_1);
+	add(*this, CONSTANT_1);
+	return *this;
+}
+
+inline BigInteger BigInteger::operator ++ (int)
+{
+	BigInteger result(*this);
+	operator ++ ();
 	return result;
 }
 	
-inline BigInteger BigInteger::operator -- () const
+inline BigInteger& BigInteger::operator -- ()
 {
-	BigInteger result;
-	result.subtract(*this, BigInteger::CONSTANT_1);
+	subtract(*this, CONSTANT_1);
+	return *this;
+}
+
+inline BigInteger BigInteger::operator -- (int)
+{
+	BigInteger result(*this);
+	operator -- ();
 	return result;
 }
 
