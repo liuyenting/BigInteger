@@ -724,35 +724,56 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		return;
 	}
 
-	BigInteger result(lhs), buffer(rhs), magnifier((int)BigInteger::Base);
+	BigInteger result(0), lh_buf(lhs), rh_buf(rhs), magnifier(10);
 
 	#ifdef DEBUG
 	std::cout << "variable initialized" << std::endl;
 	#endif
 
-	// TODO: patch for zeros first
-	#ifdef DEBUG
-	std::cout << "patching the rhs till the magnitude match lhs" << std::endl;
-	#endif
+	int patchLength;
 
-	for(int patchLength = 0; patchLength < lhs.storage.size()-rhs.storage.size(); patchLength++)
+	// group based elimination
+	while(lh_buf.storage.size()>rh_buf.storage.size())
 	{
 		#ifdef DEBUG
-		std::cout << "current buffer is " << buffer << std::endl;
+		std::cout << "current lh_buf: " << lh_buf << ", rh_buf: " << rh_buf << std::endl;
 		#endif
-		buffer *= magnifier;
+
+		patchLength = lh_buf.storage.size()-rh_buf.storage.size();
+
+		// TODO: patch for zeros first
+		#ifdef DEBUG
+		std::cout << "patching the rhs till the magnitude match lhs" << std::endl;
+		std::cout << "patch magnitude is: " << patchLength << std::endl;
+		#endif
+
+		for(int cycle = 0; cycle < patchLength; cycle++)
+		{
+			rh_buf *= magnifier;
+			
+			// turn the result into 1 for magnification
+			if(result.isZero())
+				result++;
+			
+			result *= magnifier;
+		}
+
+		#ifdef DEBUG
+		std::cout << "...patched" << std::endl;
+		#endif
+
+		lh_buf -= rh_buf;
+
+		#ifdef DEBUG
+		std::cout << "==>after the elimination" << std::endl;
+		std::cout << "result is " << result << std::endl;
+		std::cout << "lh_buf: " << lh_buf << ", rh_buf: " << rh_buf << std::endl;
+		std::cout << "lh_buf size: " << lh_buf.storage.size() << ", rh_buf size: " << rh_buf.storage.size() << std::endl;
+		#endif
+
+		// reset the rh_buf for next elimination
+		rh_buf = rhs;
 	}
-
-	#ifdef DEBUG
-	std::cout << "...patched" << std::endl;
-	std::cout << "now subtract the original value, result is "; 
-	#endif
-
-	result -= buffer;
-
-	#ifdef DEBUG
-	std::cout << result << std::endl;
-	#endif
 
 	#ifdef DEBUG
 	std::cout << "=====" << std::endl;
@@ -782,6 +803,17 @@ BigInteger::Compare BigInteger::compare(const BigInteger& lhs, const BigInteger&
 		return compareMagnitude(lhs, rhs);
 	else
 		return compareMagnitude(rhs, lhs);
+}
+
+int BigInteger::getPreciseMagnitude() const
+{
+	int result = (storage.size()-1) * BigInteger::BaseMagnitude10;
+
+	// find out the digit counts for the msg(most significant group)
+	int temp = storage.back();
+	for(; temp>0; result++, temp/=10);
+
+	return result;
 }
 
 BigInteger::Compare BigInteger::compareMagnitude(const BigInteger& lhs, const BigInteger& rhs) const
@@ -824,21 +856,18 @@ void BigInteger::removeTrailingZeros()
 
 int main()
 {
-	BigInteger a("3"), b("5"), c;
-
-	BigInteger magnifier((int)BigInteger::Base);
-
+	BigInteger a("1234567890"), b("5");
 
 	std::cout << "a:\t" << a << std::endl;
 	std::cout << "b:\t" << b << std::endl;
-	std::cout << "magnifier:\t" << magnifier << std::endl;
 
-	a *= magnifier;
-	std::cout << "magnified a: " << a << std::endl;
-
+	std::cout << "magnitude of a: " << a.getPreciseMagnitude() << std::endl;
+	std::cout << "magnitude of b: " << b.getPreciseMagnitude() << std::endl;
+	/*
 	std::cout << "a+b:\t" << (a+b) << std::endl;
 	std::cout << "a-b:\t" << (a-b) << std::endl;
 	std::cout << "a*b:\t" << (a*b) << std::endl;
+	*/
 	std::cout << "a/b:\t" << (a/b) << std::endl;
 
 	return 0;
