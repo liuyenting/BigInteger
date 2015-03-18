@@ -143,14 +143,6 @@ inline void BigInteger::operator - ()
 }
 */
 
-// binary operator: arithmetic
-inline BigInteger BigInteger::operator + (const BigInteger& rhs) const
-{
-	BigInteger result;
-	result.add(*this, rhs);
-	return result;
-}
-
 inline void BigInteger::operator ++ ()
 {
 	if(isZero())
@@ -241,6 +233,14 @@ inline void BigInteger::operator -- (int)
 	operator -- ();
 }
 
+// binary operator: arithmetic
+inline BigInteger BigInteger::operator + (const BigInteger& rhs) const
+{
+	BigInteger result;
+	result.add(*this, rhs);
+	return result;
+}
+
 inline BigInteger BigInteger::operator - (const BigInteger& rhs) const
 {
 	BigInteger result;
@@ -272,26 +272,31 @@ inline BigInteger BigInteger::operator % (const BigInteger& rhs) const
 // binary operator: arithmetic (continue)
 inline void BigInteger::operator += (const BigInteger& rhs)
 {
-	add(*this, rhs);
+	//add(*this, rhs);
+	operator = (operator + (rhs));
 }
 
 inline void BigInteger::operator -= (const BigInteger& rhs)
 {
-	subtract(*this, rhs);
+	//subtract(*this, rhs);
+	operator = (operator - (rhs));
 }	
 inline void BigInteger::operator *= (const BigInteger& rhs) 
 {
-	multiply(*this, rhs);
+	//multiply(*this, rhs);
+	operator = (operator * (rhs));
 }
 
 inline void BigInteger::operator /= (const BigInteger& rhs) 
 {
-	divide(*this, rhs);
+	//divide(*this, rhs);
+	operator = (operator / (rhs));
 }
 
 inline void BigInteger::operator %= (const BigInteger& rhs)
 {
-	modulus(*this, rhs);
+	//modulus(*this, rhs);
+	operator = (operator % (rhs));
 }
 
 // binary operator: comparison
@@ -628,6 +633,10 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 	// reserve the storage to maximum size
 	storage.reserve(lh_obj->storage.size() + rh_obj->storage.size());
 
+	#ifdef DEBUG
+	std::cout << "storage space reserve complete" << std::endl;
+	#endif
+
 	int storageIndex;
 	BaseType carry = 0, buffer;
 	// start multiplying and push the result back
@@ -636,33 +645,45 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 		storageIndex = lowerIndex;
 		for(std::vector<int>::size_type upperIndex = 0; upperIndex<lh_obj->storage.size(); upperIndex++) 
 		{
+			#ifdef DEBUG
+			std::cout << "upper: " << lh_obj->storage[upperIndex] << ", lower: " << rh_obj->storage[lowerIndex] << ", storage index: " << storageIndex << std::endl;
+			#endif
+
 			buffer = lh_obj->storage[upperIndex] * rh_obj->storage[lowerIndex] + carry;
 
 			carry = buffer/BigInteger::Base;
 			buffer %= BigInteger::Base;
 
+			#ifdef DEBUG
+			std::cout << "multiplied group: " << buffer << ", carry: " << carry << std::endl;
+			#endif
+
 			if(storageIndex < storage.size())
 			{
+				#ifdef DEBUG
+				std::cout << "new group can tuck inside current storage" << std::endl;
+				#endif
+
 				storage[storageIndex] += buffer;
 				carry += storage[storageIndex]/BigInteger::Base;
 				storage[storageIndex] %= BigInteger::Base;
 			}
 			else
+			{
+				#ifdef DEBUG
+				std::cout << "new group needs to push back into the storage" << std::endl;
+				#endif
+
 				storage.push_back(buffer);
+			}
 
 			// increment the storage group
 			storageIndex++;
 		}
 
-		// wrap the carry
-		for(storageIndex = storage.size(); carry != 0; storageIndex++)
-		{
-			buffer = carry;
-			carry = buffer/BigInteger::Base;
-			buffer %= BigInteger::Base;
-
-			storage.push_back(buffer);
-		}
+		
+		if(carry > 0)
+			storage.push_back(carry);
 	}
 
 	// using karatsuba algorithm
