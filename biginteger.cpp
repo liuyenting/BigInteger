@@ -947,7 +947,7 @@ void BigInteger::removeTrailingZeros()
 
 int main()
 {
-	BigInteger a("1234567890"), b("37");
+	BigInteger a("500"), b("12");
 
 	std::cout << "a:\t" << a << std::endl;
 	std::cout << "b:\t" << b << std::endl;
@@ -960,6 +960,7 @@ int main()
 	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
 	std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
 	std::cout << "Elapsed " << time_span.count() << " seconds." << std::endl;
+	std::cout << "a%b:\t" << (a%b) << std::endl;
 
 	return 0;
 }

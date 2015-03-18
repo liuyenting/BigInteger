@@ -71,6 +71,10 @@ public:
 	void operator = (const int&);
 	friend std::ostream& operator << (std::ostream&, const BigInteger&);
 
+	bool iszero() {
+		return isZero();
+	}
+	
 	//
 	// support functions
 	//
@@ -87,9 +91,6 @@ private:
 	Compare compareMagnitude(const BigInteger&, const BigInteger&) const;
 
 	inline bool isZero() const;
-	bool iszero() {
-		return isZero();
-	}
 
 	void removeTrailingZeros();
 };
