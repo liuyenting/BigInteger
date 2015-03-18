@@ -861,8 +861,6 @@ int main()
 	std::cout << "a:\t" << a << std::endl;
 	std::cout << "b:\t" << b << std::endl;
 
-	std::cout << "magnitude of a: " << a.getPreciseMagnitude() << std::endl;
-	std::cout << "magnitude of b: " << b.getPreciseMagnitude() << std::endl;
 	/*
 	std::cout << "a+b:\t" << (a+b) << std::endl;
 	std::cout << "a-b:\t" << (a-b) << std::endl;

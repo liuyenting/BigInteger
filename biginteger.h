@@ -69,8 +69,6 @@ public:
 	void operator = (const BigInteger&);
 	friend std::ostream& operator << (std::ostream&, const BigInteger&);
 
-	int getPreciseMagnitude() const;
-	
 	//
 	// support functions
 	//
@@ -84,7 +82,7 @@ private:
 	void karatsuba(const BigInteger&, const BigInteger&);
 
 	Compare compare(const BigInteger&, const BigInteger&) const;
-
+	int getPreciseMagnitude() const;
 	Compare compareMagnitude(const BigInteger&, const BigInteger&) const;
 
 	inline bool isZero() const;
