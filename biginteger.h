@@ -25,6 +25,7 @@ public:
 protected:
 	Sign sign;
 	std::vector<BaseType> storage;
+	int getPreciseMagnitude() const;
 public:
 	BigInteger();
 	BigInteger(const int&);
@@ -82,7 +83,6 @@ private:
 	void karatsuba(const BigInteger&, const BigInteger&);
 
 	Compare compare(const BigInteger&, const BigInteger&) const;
-	int getPreciseMagnitude() const;
 	Compare compareMagnitude(const BigInteger&, const BigInteger&) const;
 
 	inline bool isZero() const;

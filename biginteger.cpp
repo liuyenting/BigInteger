@@ -381,7 +381,7 @@ std::ostream& operator << (std::ostream& stream, const BigInteger& rhs)
 //
 void BigInteger::add(const BigInteger& lhs, const BigInteger& rhs)
 {
-	#ifdef DEBUG
+	#ifdef DEBUG_ADD
 	std::cout << "=====" << std::endl;
 	std::cout << "add() called" << std::endl;
 	#endif
@@ -410,7 +410,7 @@ void BigInteger::add(const BigInteger& lhs, const BigInteger& rhs)
 		rh_obj = &rhs;
 	}
 
-	#ifdef DEBUG
+	#ifdef DEBUG_ADD
 	std::cout << "lh_obj: " << *lh_obj << "; rh_obj: " << *rh_obj << std::endl;
 	#endif
 	
@@ -460,7 +460,7 @@ void BigInteger::add(const BigInteger& lhs, const BigInteger& rhs)
 		}
 	}
 
-	#ifdef DEBUG
+	#ifdef DEBUG_ADD
 	std::cout << "add(): result is " << *this << std::endl;
 	std::cout << "=====" << std::endl;
 	#endif
@@ -591,7 +591,7 @@ void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 
 void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 {
-	#ifdef DEBUG
+	#ifdef DEBUG_MULTIPLY
 	std::cout << "=====" << std::endl;
 	std::cout << "multiply() called" << std::endl;
 	#endif
@@ -626,14 +626,14 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 		rh_obj = &rhs;
 	}
 
-	#ifdef DEBUG
+	#ifdef DEBUG_MULTIPLY
 	std::cout << "lh_obj: " << *lh_obj << "; rh_obj: " << *rh_obj << std::endl;
 	#endif
 
 	// reserve the storage to maximum size
 	storage.reserve(lh_obj->storage.size() + rh_obj->storage.size());
 
-	#ifdef DEBUG
+	#ifdef DEBUG_MULTIPLY
 	std::cout << "storage space reserve complete" << std::endl;
 	#endif
 
@@ -645,7 +645,7 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 		storageIndex = lowerIndex;
 		for(std::vector<int>::size_type upperIndex = 0; upperIndex<lh_obj->storage.size(); upperIndex++) 
 		{
-			#ifdef DEBUG
+			#ifdef DEBUG_MULTIPLY
 			std::cout << "upper: " << lh_obj->storage[upperIndex] << ", lower: " << rh_obj->storage[lowerIndex] << ", storage index: " << storageIndex << std::endl;
 			#endif
 
@@ -654,13 +654,13 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 			carry = buffer/BigInteger::Base;
 			buffer %= BigInteger::Base;
 
-			#ifdef DEBUG
+			#ifdef DEBUG_MULTIPLY
 			std::cout << "multiplied group: " << buffer << ", carry: " << carry << std::endl;
 			#endif
 
 			if(storageIndex < storage.size())
 			{
-				#ifdef DEBUG
+				#ifdef DEBUG_MULTIPLY
 				std::cout << "new group can tuck inside current storage" << std::endl;
 				#endif
 
@@ -670,7 +670,7 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 			}
 			else
 			{
-				#ifdef DEBUG
+				#ifdef DEBUG_MULTIPLY
 				std::cout << "new group needs to push back into the storage" << std::endl;
 				#endif
 
@@ -691,7 +691,7 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 
 	//removeTrailingZeros();
 
-	#ifdef DEBUG
+	#ifdef DEBUG_MULTIPLY
 	std::cout << "=====" << std::endl;
 	#endif
 }
@@ -724,7 +724,7 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		return;
 	}
 
-	BigInteger result(0), lh_buf(lhs), rh_buf(rhs), magnifier(10);
+	BigInteger result(0), temp(0), lh_buf(lhs), rh_buf(rhs), magnifier(10);
 
 	#ifdef DEBUG
 	std::cout << "variable initialized" << std::endl;
@@ -739,7 +739,7 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		std::cout << "current lh_buf: " << lh_buf << ", rh_buf: " << rh_buf << std::endl;
 		#endif
 
-		patchLength = lh_buf.storage.size()-rh_buf.storage.size();
+		patchLength = lh_buf.getPreciseMagnitude()-rh_buf.getPreciseMagnitude();
 
 		// TODO: patch for zeros first
 		#ifdef DEBUG
@@ -747,15 +747,21 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		std::cout << "patch magnitude is: " << patchLength << std::endl;
 		#endif
 
-		for(int cycle = 0; cycle < patchLength; cycle++)
+		for(int cycle = 0; cycle < patchLength-1; cycle++)
 		{
 			rh_buf *= magnifier;
 			
 			// turn the result into 1 for magnification
-			if(result.isZero())
-				result++;
+			if(temp.isZero())
+				temp++;
 			
-			result *= magnifier;
+			temp *= magnifier;
+		}
+
+		if(rh_buf * magnifier <= lh_buf)
+		{
+			rh_buf *= magnifier;
+			temp *= magnifier;
 		}
 
 		#ifdef DEBUG
@@ -764,16 +770,23 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 
 		lh_buf -= rh_buf;
 
+		// reset the rh_buf for next elimination
+		rh_buf = rhs;
+		result += temp;
+
+		// reset the temp
+		temp = CONSTANT_0;
+
 		#ifdef DEBUG
 		std::cout << "==>after the elimination" << std::endl;
 		std::cout << "result is " << result << std::endl;
 		std::cout << "lh_buf: " << lh_buf << ", rh_buf: " << rh_buf << std::endl;
-		std::cout << "lh_buf size: " << lh_buf.storage.size() << ", rh_buf size: " << rh_buf.storage.size() << std::endl;
+		std::cout << "lh_buf size: " << lh_buf.getPreciseMagnitude() << ", rh_buf size: " << rh_buf.getPreciseMagnitude() << std::endl << std::endl;
 		#endif
-
-		// reset the rh_buf for next elimination
-		rh_buf = rhs;
 	}
+
+	// manually deal with the remained group
+	//BigInteger temp 
 
 	#ifdef DEBUG
 	std::cout << "=====" << std::endl;
