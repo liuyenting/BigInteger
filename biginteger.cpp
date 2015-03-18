@@ -4,6 +4,8 @@
 #include <iterator>
 #include <iomanip>
 
+#include <chrono>
+
 #include "biginteger.h"
 
 //
@@ -711,7 +713,7 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 
 void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 {
-	#ifdef DEBUG
+	#ifdef DEBUG_DIVIDE
 	std::cout << "=====" << std::endl;
 	std::cout << "divide() called" << std::endl;
 	#endif
@@ -719,17 +721,14 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 	if (rhs.isZero()) 
 		throw "BigInteger::divide -> divide by zero";
 
-	// empty the storage for new value
-	storage.empty();
-
-	#ifdef DEBUG
+	#ifdef DEBUG_DIVIDE
 	std::cout << "storage emptied" << std::endl;
 	#endif
 
 	// case for (0/B) or (A/B while A<B, 0 since the output is a integer)
 	if(lhs.isZero() || compareMagnitude(lhs, rhs)==BigInteger::LESS)
 	{
-		#ifdef DEBUG
+		#ifdef DEBUG_DIVIDE
 		std::cout << "direct output 0, due to (0/b) or (a/b while a<b)" << std::endl;
 		#endif
 
@@ -739,7 +738,45 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 
 	BigInteger result(0), temp(0), lh_buf(lhs), rh_buf(rhs);
 
-	#ifdef DEBUG
+	// set the sign, and have lh_buf and rh_buf as positive
+	if(lh_buf.sign==rh_buf.sign)
+	{
+		if(lh_buf.sign==BigInteger::NEGATIVE)
+		{
+			// negate both side
+			-lh_buf;
+			-rh_buf;
+		}
+
+		sign = BigInteger::POSITIVE;
+	}
+	else
+	{
+		#ifdef DEBUG_DIVIDE
+		std::cout << "negative result, due to ";
+		#endif
+
+		if(lh_buf.sign==BigInteger::NEGATIVE)
+		{
+			#ifdef DEBUG_DIVIDE
+			std::cout << "lh_buf" << std::endl;
+			#endif
+
+			-lh_buf;
+		}
+		else
+		{
+			#ifdef DEBUG_DIVIDE
+			std::cout << "rh_buf" << std::endl;
+			#endif
+			
+			-rh_buf;
+		}
+
+		sign = BigInteger::NEGATIVE;
+	}	
+
+	#ifdef DEBUG_DIVIDE
 	std::cout << "variable initialized" << std::endl;
 	#endif
 
@@ -753,89 +790,90 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 			magnifier *= 10;
 		BigInteger converted_magnifier(magnifier);
 
-		#ifdef DEBUG
+		#ifdef DEBUG_DIVIDE
 		std::cout << "==>m using magnifier " << converted_magnifier << std::endl;
 		#endif
 
-		while(true)
+		if(magnifier_magnitude == 0)
 		{
-			#ifdef DEBUG
-			std::cout << "lh_buf:\t" << lh_buf << std::endl << "rh_buf:\t" << rh_buf << std::endl;
-			#endif
-
-			patchLength = lh_buf.getPreciseMagnitude()-rh_buf.getPreciseMagnitude();
-			patchLength /= magnifier_magnitude;
-
-			#ifdef DEBUG
-			std::cout << "patching the rhs till the magnitude match lhs" << std::endl;
-			std::cout << "patch magnitude is: " << patchLength << std::endl;
-			#endif
-
-			for(int cycle = 0; cycle < patchLength-1; cycle++)
+			temp++;
+			magnifier_magnitude--;
+		}
+		else
+		{
+			for(; rh_buf*converted_magnifier <= lh_buf; )
 			{
 				rh_buf *= converted_magnifier;
-				
-				// turn the result into 1 for magnification
+					
+				// turn the temporary result into 1 for magnification
 				if(temp.isZero())
 					temp++;
 				
 				temp *= converted_magnifier;
 			}
 
-			if(rh_buf * converted_magnifier <= lh_buf)
+			if(temp.isZero())
 			{
-				rh_buf *= converted_magnifier;
-				temp *= converted_magnifier;
+				// rh_buf is to large for this magnification rate
+				magnifier_magnitude--;
+				continue;
 			}
-			else
-			{
-				// can't continue to eliminate if no patching happened
-				#ifdef DEBUG
-				std::cout << "no match for current magnification" << std::endl << std::endl;
-				#endif
+		}
 
-				break;
-			}
+		#ifdef DEBUG_DIVIDE
+		std::cout << "> patched" << std::endl;
+		std::cout << "...rh_buf: " << rh_buf << std::endl;
+		#endif
 
-			#ifdef DEBUG
-			std::cout << "...patched" << std::endl;
-			std::cout << "rh_buf: " << rh_buf << std::endl;
+		for(; (lh_buf-rh_buf) >= CONSTANT_0; )
+		{
+			#ifdef DEBUG_DIVIDE
+			std::cout << "> loop head" << std::endl;
+			std::cout << "...lh_buf: " << lh_buf << std::endl;
+			std::cout << "...rh_buf: " << rh_buf << std::endl;
+			std::cout << "...temp  : " << temp << std::endl;
+			std::cout << "...result: " << result << std::endl;
 			#endif
 
 			lh_buf -= rh_buf;
-			#ifdef DEBUG
-			std::cout << "...after -=" << std::endl;
-			std::cout << "lh_buf: " << lh_buf << std::endl;
-			#endif
-
-			// reset the rh_buf for next elimination
-			rh_buf = rhs;
 			result += temp;
 
-			// reset the temp
-			temp = 0;
-
-			#ifdef DEBUG
-			std::cout << "==>e after the elimination" << std::endl;
-			std::cout << "result is " << result << std::endl;
-			std::cout << "lh_buf size: " << lh_buf.getPreciseMagnitude() << ", rh_buf size: " << rh_buf.getPreciseMagnitude() << std::endl << std::endl;
+			#ifdef DEBUG_DIVIDE
+			std::cout << "> loop tail" << std::endl;
+			std::cout << "...lh_buf: " << lh_buf << std::endl;
+			std::cout << "...rh_buf: " << rh_buf << std::endl;
+			std::cout << "...temp  : " << temp << std::endl;
+			std::cout << "...result: " << result << std::endl;
 			#endif
 		}
 
-		// shrink the magnifier
-		magnifier_magnitude--;
+		// reset rh_buf(with toggled sign) and temporary result
+		Sign signBackup = rh_buf.sign;
+		rh_buf = rhs;
+		rh_buf.sign = signBackup;
+		temp = CONSTANT_0;
+
+		#ifdef DEBUG_DIVIDE
+		std::cout << "> after reset" << std::endl;
+		std::cout << "...lh_buf: " << lh_buf << std::endl;
+		std::cout << "...rh_buf: " << rh_buf << std::endl;
+		std::cout << "...temp  : " << temp << std::endl;
+		std::cout << "...result: " << result << std::endl;
+		#endif
 	}
 
+	// copy back the sign
+	result.sign = sign;
 	operator = (result);
 
-	#ifdef DEBUG
+	#ifdef DEBUG_DIVIDE
 	std::cout << "=====" << std::endl;
 	#endif
 }
 
 void BigInteger::modulus(const BigInteger& lhs, const BigInteger& rhs)
 {
-
+	operator = (lhs - rhs * (lhs/rhs));
 }
 
 void BigInteger::karatsuba(const BigInteger& lhs, const BigInteger& rhs)
@@ -909,24 +947,19 @@ void BigInteger::removeTrailingZeros()
 
 int main()
 {
-	//BigInteger a("23478543789876543212567890987654345432389876543"), b("874342789876598765432126545686543");
-	BigInteger a("23478543789876543212567890987654345432389876543"), b("874342789876598765432126545686543000000000000");
+	BigInteger a("1234567890"), b("37");
 
 	std::cout << "a:\t" << a << std::endl;
 	std::cout << "b:\t" << b << std::endl;
 
-	std::cout << "a-b :\t" << (a-b) << std::endl;
-	a-=b;
-	std::cout << "a-=b:\t" << a << std::endl;
-
-	return 0;
-
-	/*
 	std::cout << "a+b:\t" << (a+b) << std::endl;
 	std::cout << "a-b:\t" << (a-b) << std::endl;
 	std::cout << "a*b:\t" << (a*b) << std::endl;
-	*/
+	std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 	std::cout << "a/b:\t" << (a/b) << std::endl;
+	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+	std::cout << "Elapsed " << time_span.count() << " seconds." << std::endl;
 
 	return 0;
 }

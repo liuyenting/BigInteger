@@ -87,6 +87,9 @@ private:
 	Compare compareMagnitude(const BigInteger&, const BigInteger&) const;
 
 	inline bool isZero() const;
+	bool iszero() {
+		return isZero();
+	}
 
 	void removeTrailingZeros();
 };
