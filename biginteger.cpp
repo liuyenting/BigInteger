@@ -473,14 +473,14 @@ void BigInteger::add(const BigInteger& lhs, const BigInteger& rhs)
 
 void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 {
-	#ifdef DEBUG
+	#ifdef DEBUG_SUBTRACT
 	std::cout << "=====" << std::endl;
 	std::cout << "subtract() called" << std::endl;
 	#endif
 
 	if(lhs.sign == ZERO)
 	{
-		#ifdef DEBUG
+		#ifdef DEBUG_SUBTRACT
 		std::cout << "...lhs is ZERO" << std::endl;
 		#endif
 
@@ -491,7 +491,7 @@ void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 	}
 	else if(rhs.sign == ZERO)
 	{
-		#ifdef DEBUG
+		#ifdef DEBUG_SUBTRACT
 		std::cout << "...rhs is ZERO" << std::endl;
 		#endif
 
@@ -512,19 +512,23 @@ void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 		rh_obj = &rhs;
 	}
 
-	#ifdef DEBUG
+	#ifdef DEBUG_SUBTRACT
 	std::cout << "lh_obj: " << *lh_obj << "; rh_obj: " << *rh_obj << std::endl;
 	#endif
 	
 	if(lhs.sign == rhs.sign)
 	{
-		#ifdef DEBUG
-		std::cout << "lh_obj.sign = rh_obj.sign" << std::endl;
+		#ifdef DEBUG_SUBTRACT
+		std::cout << "sign EQUAL" << std::endl;
 		#endif
 
 		// duplicate the longer one, and ignore if it's itself
 		if(lh_obj != this)
 			operator = (*lh_obj);
+
+		#ifdef DEBUG_SUBTRACT
+		std::cout << "lh_obj copy complete" << std::endl;
+		#endif
 
 		BaseType carry = 0, buffer;
 		bool needCarry;
@@ -539,7 +543,7 @@ void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 			if(index < rh_obj->storage.size())
 			{
 				// wrap first, since base type is unsigned
-				if(lh_obj->storage[index] < rh_obj->storage[index])
+				if(lh_obj->storage[index] < rh_obj->storage[index]+carry)
 				{
 					buffer += Base;
 					needCarry = true;
@@ -567,6 +571,10 @@ void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 	}
 	else
 	{
+		#ifdef DEBUG_SUBTRACT
+		std::cout << "sign DIFFERENT" << std::endl;
+		#endif
+
 		if(lh_obj->sign == BigInteger::POSITIVE)
 		{
 			// +LARGE -SMALL
@@ -589,7 +597,7 @@ void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 
 	removeTrailingZeros();
 
-	#ifdef DEBUG
+	#ifdef DEBUG_SUBTRACT
 	std::cout << "=====" << std::endl;
 	#endif
 }
@@ -729,70 +737,96 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		return;
 	}
 
-	BigInteger result(0), temp(0), lh_buf(lhs), rh_buf(rhs), magnifier(10);
+	BigInteger result(0), temp(0), lh_buf(lhs), rh_buf(rhs);
 
 	#ifdef DEBUG
 	std::cout << "variable initialized" << std::endl;
 	#endif
 
-	int patchLength;
+	int patchLength, magnifier_magnitude = static_cast<int>(BigInteger::BaseMagnitude10), magnifier;
 
 	// group based elimination
-	while(lh_buf.storage.size()>rh_buf.storage.size())
+	while(magnifier_magnitude>=0)
 	{
+		magnifier = 1;
+		for(int i = magnifier_magnitude; i > 0; i--)
+			magnifier *= 10;
+		BigInteger converted_magnifier(magnifier);
+
 		#ifdef DEBUG
-		std::cout << "current lh_buf: " << lh_buf << ", rh_buf: " << rh_buf << std::endl;
+		std::cout << "==>m using magnifier " << converted_magnifier << std::endl;
 		#endif
 
-		patchLength = lh_buf.getPreciseMagnitude()-rh_buf.getPreciseMagnitude();
-
-		// TODO: patch for zeros first
-		#ifdef DEBUG
-		std::cout << "patching the rhs till the magnitude match lhs" << std::endl;
-		std::cout << "patch magnitude is: " << patchLength << std::endl;
-		#endif
-
-		for(int cycle = 0; cycle < patchLength-1; cycle++)
+		while(true)
 		{
-			rh_buf *= magnifier;
-			
-			// turn the result into 1 for magnification
-			if(temp.isZero())
-				temp++;
-			
-			temp *= magnifier;
+			#ifdef DEBUG
+			std::cout << "lh_buf:\t" << lh_buf << std::endl << "rh_buf:\t" << rh_buf << std::endl;
+			#endif
+
+			patchLength = lh_buf.getPreciseMagnitude()-rh_buf.getPreciseMagnitude();
+			patchLength /= magnifier_magnitude;
+
+			#ifdef DEBUG
+			std::cout << "patching the rhs till the magnitude match lhs" << std::endl;
+			std::cout << "patch magnitude is: " << patchLength << std::endl;
+			#endif
+
+			for(int cycle = 0; cycle < patchLength-1; cycle++)
+			{
+				rh_buf *= converted_magnifier;
+				
+				// turn the result into 1 for magnification
+				if(temp.isZero())
+					temp++;
+				
+				temp *= converted_magnifier;
+			}
+
+			if(rh_buf * converted_magnifier <= lh_buf)
+			{
+				rh_buf *= converted_magnifier;
+				temp *= converted_magnifier;
+			}
+			else
+			{
+				// can't continue to eliminate if no patching happened
+				#ifdef DEBUG
+				std::cout << "no match for current magnification" << std::endl << std::endl;
+				#endif
+
+				break;
+			}
+
+			#ifdef DEBUG
+			std::cout << "...patched" << std::endl;
+			std::cout << "rh_buf: " << rh_buf << std::endl;
+			#endif
+
+			lh_buf -= rh_buf;
+			#ifdef DEBUG
+			std::cout << "...after -=" << std::endl;
+			std::cout << "lh_buf: " << lh_buf << std::endl;
+			#endif
+
+			// reset the rh_buf for next elimination
+			rh_buf = rhs;
+			result += temp;
+
+			// reset the temp
+			temp = 0;
+
+			#ifdef DEBUG
+			std::cout << "==>e after the elimination" << std::endl;
+			std::cout << "result is " << result << std::endl;
+			std::cout << "lh_buf size: " << lh_buf.getPreciseMagnitude() << ", rh_buf size: " << rh_buf.getPreciseMagnitude() << std::endl << std::endl;
+			#endif
 		}
 
-		if(rh_buf * magnifier <= lh_buf)
-		{
-			rh_buf *= magnifier;
-			temp *= magnifier;
-		}
-
-		#ifdef DEBUG
-		std::cout << "...patched" << std::endl;
-		#endif
-
-		lh_buf -= rh_buf;
-
-		// reset the rh_buf for next elimination
-		rh_buf = rhs;
-		result += temp;
-
-		// reset the temp
-		temp = CONSTANT_0;
-
-		#ifdef DEBUG
-		std::cout << "==>after the elimination" << std::endl;
-		std::cout << "result is " << result << std::endl;
-		std::cout << "lh_buf: " << lh_buf << ", rh_buf: " << rh_buf << std::endl;
-		std::cout << "lh_buf size: " << lh_buf.getPreciseMagnitude() << ", rh_buf size: " << rh_buf.getPreciseMagnitude() << std::endl << std::endl;
-		#endif
+		// shrink the magnifier
+		magnifier_magnitude--;
 	}
 
-	// manually deal with the remained group
-	temp = lh_buf.storage[0]/rh_buf.storage[0];
-	result += temp;
+	operator = (result);
 
 	#ifdef DEBUG
 	std::cout << "=====" << std::endl;
@@ -875,10 +909,17 @@ void BigInteger::removeTrailingZeros()
 
 int main()
 {
-	BigInteger a("1234567890"), b("5");
+	//BigInteger a("23478543789876543212567890987654345432389876543"), b("874342789876598765432126545686543");
+	BigInteger a("23478543789876543212567890987654345432389876543"), b("874342789876598765432126545686543000000000000");
 
 	std::cout << "a:\t" << a << std::endl;
 	std::cout << "b:\t" << b << std::endl;
+
+	std::cout << "a-b :\t" << (a-b) << std::endl;
+	a-=b;
+	std::cout << "a-=b:\t" << a << std::endl;
+
+	return 0;
 
 	/*
 	std::cout << "a+b:\t" << (a+b) << std::endl;
