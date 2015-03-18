@@ -68,6 +68,7 @@ public:
 
 	// binary operator: stream and memroy operation
 	void operator = (const BigInteger&);
+	void operator = (const int&);
 	friend std::ostream& operator << (std::ostream&, const BigInteger&);
 
 	//

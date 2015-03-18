@@ -16,21 +16,7 @@ BigInteger::BigInteger()
 
 BigInteger::BigInteger(const int& input)
 {
-	int temp = input;
-
-	// register the sign of default value
-	if(temp == 0)
-		sign = ZERO;
-	else if(temp > 0)
-		sign = POSITIVE;
-	else
-		sign = NEGATIVE;
-
-	while(temp > 0)
-	{
-		storage.push_back(temp%BigInteger::Base);
-		temp /= BigInteger::Base;
-	}
+	operator = (input);
 }
 
 BigInteger::BigInteger(const std::string& input)
@@ -346,6 +332,25 @@ void BigInteger::operator = (const BigInteger& rhs)
 	std::vector<BigInteger::BaseType>::const_iterator iterator;
 	for(iterator = rhs.storage.begin(); iterator != rhs.storage.end(); ++iterator)
 		storage.push_back(*iterator);
+}
+
+void BigInteger::operator = (const int& rhs)
+{
+	int temp = rhs;
+
+	// register the sign of default value
+	if(temp == 0)
+		sign = ZERO;
+	else if(temp > 0)
+		sign = POSITIVE;
+	else
+		sign = NEGATIVE;
+
+	while(temp > 0)
+	{
+		storage.push_back(temp%BigInteger::Base);
+		temp /= BigInteger::Base;
+	}
 }
 
 std::ostream& operator << (std::ostream& stream, const BigInteger& rhs)
@@ -786,7 +791,8 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 	}
 
 	// manually deal with the remained group
-	//BigInteger temp 
+	temp = lh_buf.storage[0]/rh_buf.storage[0];
+	result += temp;
 
 	#ifdef DEBUG
 	std::cout << "=====" << std::endl;
