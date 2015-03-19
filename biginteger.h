@@ -67,14 +67,14 @@ public:
 
 
 	// binary operator: stream and memroy operation
-	void operator = (const BigInteger&);
-	void operator = (const int&);
+	BigInteger& operator = (const BigInteger&);
+	BigInteger& operator = (const int&);
 	friend std::ostream& operator << (std::ostream&, const BigInteger&);
 
 	bool iszero() {
 		return isZero();
 	}
-	
+
 	//
 	// support functions
 	//

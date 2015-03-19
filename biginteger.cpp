@@ -98,7 +98,7 @@ BigInteger::BigInteger(const std::vector<BigInteger::BaseType>& input)
 }
 
 // unary operator
-inline void BigInteger::operator - ()
+void BigInteger::operator - ()
 {
 	/*
 	BigInteger result = *this;
@@ -117,21 +117,21 @@ inline void BigInteger::operator - ()
 		sign = BigInteger::POSITIVE;
 }
 
-inline BigInteger BigInteger::operator - () const
+BigInteger BigInteger::operator - () const
 {
 	BigInteger result(*this);
 	result.operator - ();
 	return result;
 }
 /*
-inline void BigInteger::operator - () 
+void BigInteger::operator - () 
 {
 	operator - ();
 	//return *this;
 }
 */
 
-inline void BigInteger::operator ++ ()
+void BigInteger::operator ++ ()
 {
 	if(isZero())
 	{
@@ -164,12 +164,12 @@ inline void BigInteger::operator ++ ()
 		storage.push_back(carry);
 }
 
-inline void BigInteger::operator ++ (int)
+void BigInteger::operator ++ (int)
 {
 	operator ++ ();
 }
 	
-inline void BigInteger::operator -- ()
+void BigInteger::operator -- ()
 {
 	if(isZero())
 	{
@@ -216,41 +216,41 @@ inline void BigInteger::operator -- ()
 	removeTrailingZeros();
 }
 
-inline void BigInteger::operator -- (int)
+void BigInteger::operator -- (int)
 {
 	operator -- ();
 }
 
 // binary operator: arithmetic
-inline BigInteger BigInteger::operator + (const BigInteger& rhs) const
+BigInteger BigInteger::operator + (const BigInteger& rhs) const
 {
 	BigInteger result;
 	result.add(*this, rhs);
 	return result;
 }
 
-inline BigInteger BigInteger::operator - (const BigInteger& rhs) const
+BigInteger BigInteger::operator - (const BigInteger& rhs) const
 {
 	BigInteger result;
 	result.subtract(*this, rhs);
 	return result;
 }
 
-inline BigInteger BigInteger::operator * (const BigInteger& rhs) const
+BigInteger BigInteger::operator * (const BigInteger& rhs) const
 {
 	BigInteger result;
 	result.multiply(*this, rhs);
 	return result;
 }
 
-inline BigInteger BigInteger::operator / (const BigInteger& rhs) const
+BigInteger BigInteger::operator / (const BigInteger& rhs) const
 {
 	BigInteger result;
 	result.divide(*this, rhs);
 	return result;
 }
 
-inline BigInteger BigInteger::operator % (const BigInteger& rhs) const
+BigInteger BigInteger::operator % (const BigInteger& rhs) const
 {
 	BigInteger result;
 	result.modulus(*this, rhs);
@@ -258,30 +258,30 @@ inline BigInteger BigInteger::operator % (const BigInteger& rhs) const
 }
 
 // binary operator: arithmetic (continue)
-inline void BigInteger::operator += (const BigInteger& rhs)
+void BigInteger::operator += (const BigInteger& rhs)
 {
 	//add(*this, rhs);
 	operator = (operator + (rhs));
 }
 
-inline void BigInteger::operator -= (const BigInteger& rhs)
+void BigInteger::operator -= (const BigInteger& rhs)
 {
 	//subtract(*this, rhs);
 	operator = (operator - (rhs));
 }	
-inline void BigInteger::operator *= (const BigInteger& rhs) 
+void BigInteger::operator *= (const BigInteger& rhs) 
 {
 	//multiply(*this, rhs);
 	operator = (operator * (rhs));
 }
 
-inline void BigInteger::operator /= (const BigInteger& rhs) 
+void BigInteger::operator /= (const BigInteger& rhs) 
 {
 	//divide(*this, rhs);
 	operator = (operator / (rhs));
 }
 
-inline void BigInteger::operator %= (const BigInteger& rhs)
+void BigInteger::operator %= (const BigInteger& rhs)
 {
 	//modulus(*this, rhs);
 	operator = (operator % (rhs));
@@ -319,7 +319,7 @@ bool BigInteger::operator <= (const BigInteger& rhs) const
 }
 
 // binary operator: stream and memroy operation
-void BigInteger::operator = (const BigInteger& rhs)
+BigInteger& BigInteger::operator = (const BigInteger& rhs)
 {
 	// copy sign
 	sign = rhs.sign;
@@ -334,9 +334,11 @@ void BigInteger::operator = (const BigInteger& rhs)
 	std::vector<BigInteger::BaseType>::const_iterator iterator;
 	for(iterator = rhs.storage.begin(); iterator != rhs.storage.end(); ++iterator)
 		storage.push_back(*iterator);
+
+	return *this;
 }
 
-void BigInteger::operator = (const int& rhs)
+BigInteger& BigInteger::operator = (const int& rhs)
 {
 	int temp = rhs;
 
@@ -353,6 +355,8 @@ void BigInteger::operator = (const int& rhs)
 		storage.push_back(temp%BigInteger::Base);
 		temp /= BigInteger::Base;
 	}
+
+	return *this;
 }
 
 std::ostream& operator << (std::ostream& stream, const BigInteger& rhs)
@@ -928,7 +932,7 @@ BigInteger::Compare BigInteger::compareMagnitude(const BigInteger& lhs, const Bi
 	return EQUAL;
 }
 
-inline bool BigInteger::isZero() const
+bool BigInteger::isZero() const
 {
 	return sign == BigInteger::ZERO;
 }
@@ -947,7 +951,7 @@ void BigInteger::removeTrailingZeros()
 
 int main()
 {
-	BigInteger a("500"), b("12");
+	BigInteger a("12345"), b("678");
 
 	std::cout << "a:\t" << a << std::endl;
 	std::cout << "b:\t" << b << std::endl;
