@@ -136,15 +136,13 @@ void BigInteger::operator ++ ()
 	if(isZero())
 	{
 		// 0 -> 1
-		sign = BigInteger::POSITIVE;
-		storage.push_back(1);
+		operator = (10);
 		return;
 	}
 	else if(sign==BigInteger::NEGATIVE && storage.size()==1 && storage[0]==1)
 	{
 		// -1 -> 0
-		sign = BigInteger::ZERO;
-		storage.empty();
+		operator = (0);
 		return;
 	}
 
@@ -174,15 +172,13 @@ void BigInteger::operator -- ()
 	if(isZero())
 	{
 		// 0 -> -1
-		sign = BigInteger::NEGATIVE;
-		storage.push_back(1);
+		operator = (-1);
 		return;
 	}
 	else if(sign==BigInteger::POSITIVE && storage.size()==1 && storage[0]==1)
 	{
 		// 1 -> 0
-		sign = BigInteger::ZERO;
-		storage.empty();
+		operator = (0);
 		return;
 	}
 
@@ -347,13 +343,19 @@ BigInteger& BigInteger::operator = (const int& rhs)
 {
 	int temp = rhs;
 
+	// empty the storage
+	storage.clear();
+
 	// register the sign of default value
 	if(temp == 0)
-		sign = ZERO;
+		sign = BigInteger::ZERO;
 	else if(temp > 0)
-		sign = POSITIVE;
+		sign = BigInteger::POSITIVE;
 	else
-		sign = NEGATIVE;
+	{
+		sign = BigInteger::NEGATIVE;
+		temp *= -1;
+	}
 
 	while(temp > 0)
 	{
@@ -636,7 +638,7 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 	#endif
 
 	// empty the storage for new value
-	storage.empty();
+	storage.clear();
 
 	// set as 0 if either of them is 0
 	if(lhs.isZero() || rhs.isZero())
