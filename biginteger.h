@@ -35,27 +35,27 @@ public:
 
 
 	// unary operator
-	inline void operator - ();
-	inline BigInteger operator - () const;
+	void operator - ();
+	BigInteger operator - () const;
 
-	inline void operator ++ ();
-	inline void operator ++ (int);
-	inline void operator -- ();
-	inline void operator -- (int);
+	void operator ++ ();
+	void operator ++ (int);
+	void operator -- ();
+	void operator -- (int);
 	
 	// binary operator: arithmetic
-	inline BigInteger operator + (const BigInteger&) const;
-	inline BigInteger operator - (const BigInteger&) const;
-	inline BigInteger operator * (const BigInteger&) const;
-	inline BigInteger operator / (const BigInteger&) const;
-	inline BigInteger operator % (const BigInteger&) const;
+	BigInteger operator + (const BigInteger&) const;
+	BigInteger operator - (const BigInteger&) const;
+	BigInteger operator * (const BigInteger&) const;
+	BigInteger operator / (const BigInteger&) const;
+	BigInteger operator % (const BigInteger&) const;
 
 	// binary operator: arithmetic (continue)
-	inline void operator += (const BigInteger&);
-	inline void operator -= (const BigInteger&);
-	inline void operator *= (const BigInteger&);
-	inline void operator /= (const BigInteger&);
-	inline void operator %= (const BigInteger&);
+	void operator += (const BigInteger&);
+	void operator -= (const BigInteger&);
+	void operator *= (const BigInteger&);
+	void operator /= (const BigInteger&);
+	void operator %= (const BigInteger&);
 
 	// binary operator: comparison
 	bool operator > (const BigInteger&) const;
@@ -90,7 +90,7 @@ private:
 	Compare compare(const BigInteger&, const BigInteger&) const;
 	Compare compareMagnitude(const BigInteger&, const BigInteger&) const;
 
-	inline bool isZero() const;
+	bool isZero() const;
 
 	void removeTrailingZeros();
 };
