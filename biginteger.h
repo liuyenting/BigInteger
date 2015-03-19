@@ -44,11 +44,11 @@ public:
 	void operator -- (int);
 	
 	// binary operator: arithmetic
-	BigInteger operator + (const BigInteger&) const;
-	BigInteger operator - (const BigInteger&) const;
-	BigInteger operator * (const BigInteger&) const;
-	BigInteger operator / (const BigInteger&) const;
-	BigInteger operator % (const BigInteger&) const;
+	const BigInteger operator + (const BigInteger&) const;
+	const BigInteger operator - (const BigInteger&) const;
+	const BigInteger operator * (const BigInteger&) const;
+	const BigInteger operator / (const BigInteger&) const;
+	const BigInteger operator % (const BigInteger&) const;
 
 	// binary operator: arithmetic (continue)
 	void operator += (const BigInteger&);
