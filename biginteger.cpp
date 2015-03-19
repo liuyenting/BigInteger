@@ -370,11 +370,13 @@ std::ostream& operator << (std::ostream& stream, const BigInteger& rhs)
 		case BigInteger::ZERO:
 			stream << '0';
 			return stream;
-		#ifdef FORCE_SHOW_POSITIVE
 		case BigInteger::POSITIVE:
+			#ifdef FORCE_SHOW_POSITIVE
 			stream << '+';
+			#endif
 			break;
-		#endif
+		default:
+			throw "BigInteger::operator<<(std::ostream&, const BigInteger&) -> Sign undefine";
 	}
 
 	// print the first group without padding
