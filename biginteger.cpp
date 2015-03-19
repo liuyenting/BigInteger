@@ -258,30 +258,31 @@ const BigInteger BigInteger::operator % (const BigInteger& rhs) const
 }
 
 // binary operator: arithmetic (continue)
-void BigInteger::operator += (const BigInteger& rhs)
+BigInteger& BigInteger::operator += (const BigInteger& rhs)
 {
 	//add(*this, rhs);
 	operator = (operator + (rhs));
 }
 
-void BigInteger::operator -= (const BigInteger& rhs)
+BigInteger& BigInteger::operator -= (const BigInteger& rhs)
 {
 	//subtract(*this, rhs);
 	operator = (operator - (rhs));
 }	
-void BigInteger::operator *= (const BigInteger& rhs) 
+BigInteger& BigInteger::operator *= (const BigInteger& rhs) 
 {
 	//multiply(*this, rhs);
 	operator = (operator * (rhs));
+	return *this;
 }
 
-void BigInteger::operator /= (const BigInteger& rhs) 
+BigInteger& BigInteger::operator /= (const BigInteger& rhs) 
 {
 	//divide(*this, rhs);
 	operator = (operator / (rhs));
 }
 
-void BigInteger::operator %= (const BigInteger& rhs)
+BigInteger& BigInteger::operator %= (const BigInteger& rhs)
 {
 	//modulus(*this, rhs);
 	operator = (operator % (rhs));

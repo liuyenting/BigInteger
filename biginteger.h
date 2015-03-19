@@ -51,11 +51,11 @@ public:
 	const BigInteger operator % (const BigInteger&) const;
 
 	// binary operator: arithmetic (continue)
-	void operator += (const BigInteger&);
-	void operator -= (const BigInteger&);
-	void operator *= (const BigInteger&);
-	void operator /= (const BigInteger&);
-	void operator %= (const BigInteger&);
+	BigInteger& operator += (const BigInteger&);
+	BigInteger& operator -= (const BigInteger&);
+	BigInteger& operator *= (const BigInteger&);
+	BigInteger& operator /= (const BigInteger&);
+	BigInteger& operator %= (const BigInteger&);
 
 	// binary operator: comparison
 	bool operator > (const BigInteger&) const;
@@ -70,10 +70,6 @@ public:
 	BigInteger& operator = (const BigInteger&);
 	BigInteger& operator = (const int&);
 	friend std::ostream& operator << (std::ostream&, const BigInteger&);
-
-	bool iszero() {
-		return isZero();
-	}
 
 	//
 	// support functions
