@@ -71,6 +71,9 @@ public:
 	BigInteger& operator = (const int&);
 	friend std::ostream& operator << (std::ostream&, const BigInteger&);
 
+	bool iseven();
+	bool iszero();
+
 	//
 	// support functions
 	//

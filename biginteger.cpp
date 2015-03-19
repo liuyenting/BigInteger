@@ -388,6 +388,19 @@ std::ostream& operator << (std::ostream& stream, const BigInteger& rhs)
 	return stream;
 }
 
+bool BigInteger::iseven()
+{
+	if(storage.front()%2==0)
+		return true;
+	else
+		return false;
+}
+
+bool BigInteger::iszero()
+{
+	return isZero();
+}
+
 //
 // support functions
 //
@@ -785,7 +798,7 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 	std::cout << "variable initialized" << std::endl;
 	#endif
 
-	int patchLength, magnifier_magnitude = static_cast<int>(BigInteger::BaseMagnitude10), magnifier;
+	int magnifier_magnitude = static_cast<int>(BigInteger::BaseMagnitude10), magnifier;
 
 	// group based elimination
 	while(magnifier_magnitude>=0)
