@@ -402,7 +402,7 @@ bool BigInteger::iseven()
 		return false;
 }
 
-bool BigInteger::iszero()
+bool BigInteger::iszero() const
 {
 	return isZero();
 }

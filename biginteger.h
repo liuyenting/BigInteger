@@ -72,7 +72,7 @@ public:
 	friend std::ostream& operator << (std::ostream&, const BigInteger&);
 
 	bool iseven();
-	bool iszero();
+	bool iszero() const;
 
 	//
 	// support functions
