@@ -262,12 +262,14 @@ BigInteger& BigInteger::operator += (const BigInteger& rhs)
 {
 	//add(*this, rhs);
 	operator = (operator + (rhs));
+	return *this;
 }
 
 BigInteger& BigInteger::operator -= (const BigInteger& rhs)
 {
 	//subtract(*this, rhs);
 	operator = (operator - (rhs));
+	return *this;
 }	
 BigInteger& BigInteger::operator *= (const BigInteger& rhs) 
 {
@@ -280,12 +282,14 @@ BigInteger& BigInteger::operator /= (const BigInteger& rhs)
 {
 	//divide(*this, rhs);
 	operator = (operator / (rhs));
+	return *this;
 }
 
 BigInteger& BigInteger::operator %= (const BigInteger& rhs)
 {
 	//modulus(*this, rhs);
 	operator = (operator % (rhs));
+	return *this;
 }
 
 // binary operator: comparison
