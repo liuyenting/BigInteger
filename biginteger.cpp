@@ -676,13 +676,13 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 	std::cout << "storage space reserve complete" << std::endl;
 	#endif
 
-	int storageIndex;
+	unsigned int storageIndex;
 	BaseType carry = 0, buffer;
 	// start multiplying and push the result back
-	for(std::vector<int>::size_type lowerIndex = 0; lowerIndex<rh_obj->storage.size(); lowerIndex++) 
+	for(std::vector<unsigned int>::size_type lowerIndex = 0; lowerIndex<rh_obj->storage.size(); lowerIndex++) 
 	{
 		storageIndex = lowerIndex;
-		for(std::vector<int>::size_type upperIndex = 0; upperIndex<lh_obj->storage.size(); upperIndex++) 
+		for(std::vector<unsigned int>::size_type upperIndex = 0; upperIndex<lh_obj->storage.size(); upperIndex++) 
 		{
 			#ifdef DEBUG_MULTIPLY
 			std::cout << "upper: " << lh_obj->storage[upperIndex] << ", lower: " << rh_obj->storage[lowerIndex] << ", storage index: " << storageIndex << std::endl;
