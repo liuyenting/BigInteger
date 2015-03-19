@@ -935,7 +935,7 @@ BigInteger::Compare BigInteger::compareMagnitude(const BigInteger& lhs, const Bi
 
 bool BigInteger::isZero() const
 {
-	return sign == BigInteger::ZERO;
+	return sign==BigInteger::ZERO;
 }
 
 void BigInteger::removeTrailingZeros()
