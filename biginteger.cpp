@@ -13,7 +13,7 @@
 //
 BigInteger::BigInteger()
 {
-	BigInteger(0);
+	operator = (0);
 }
 
 BigInteger::BigInteger(const int& input)
@@ -735,7 +735,7 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		return;
 	}
 
-	BigInteger result(0), temp, lh_buf(lhs), rh_buf(rhs);
+	BigInteger result, temp, lh_buf(lhs), rh_buf(rhs);
 
 	// set the sign, and have lh_buf and rh_buf as positive
 	if(lh_buf.sign==rh_buf.sign)
@@ -829,11 +829,16 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 			result += temp;
 		}
 
-		// back off
 		if(lh_buf.sign == BigInteger::NEGATIVE)
 		{
+			// back off, since subtracted too much
 			lh_buf += rh_buf;
 			result -= temp;
+		}
+		else if(lh_buf.isZero())
+		{
+			// divided completely, quit the loop immediately
+			break;
 		}
 
 		// reset rh_buf(with toggled sign) and temporary result
@@ -907,7 +912,7 @@ BigInteger::Compare BigInteger::compareMagnitude(const BigInteger& lhs, const Bi
 		return BigInteger::LESS;
 	else
 	{
-		for(std::vector<int>::size_type index = lhs.storage.size()-1; index>=0; index--)
+		for(int index = lhs.storage.size()-1; index>=0; index--)
 		{
 			if(lhs.storage[index] > rhs.storage[index])
 				return BigInteger::GREATER;
@@ -938,10 +943,12 @@ void BigInteger::removeTrailingZeros()
 
 int main()
 {
-	BigInteger a("5094478509788959473103748"), b("5657975189777489289138731");
+	BigInteger a("1"), b("221");
 
 	std::cout << "a:\t" << a << std::endl;
 	std::cout << "b:\t" << b << std::endl;
+
+	std::cout << "a==1:\t" << (a==CONSTANT_1) << std::endl;
 
 	std::cout << "a+b:\t" << (a+b) << std::endl;
 	std::cout << "a-b:\t" << (a-b) << std::endl;
