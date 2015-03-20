@@ -123,13 +123,6 @@ BigInteger BigInteger::operator - () const
 	result.operator - ();
 	return result;
 }
-/*
-void BigInteger::operator - () 
-{
-	operator - ();
-	//return *this;
-}
-*/
 
 void BigInteger::operator ++ ()
 {
@@ -151,7 +144,7 @@ void BigInteger::operator ++ ()
 
 	// wrap for all the carries
 	BaseType carry = 0;
-	for(std::vector<int>::size_type index = 0; index<storage.size(); index++) 
+	for(std::vector<int>::size_type index = 0; index<storage.size(); index++)
 	{
 		storage[index] += carry;
 		carry = storage[index]/BigInteger::Base;
@@ -166,7 +159,7 @@ void BigInteger::operator ++ (int)
 {
 	operator ++ ();
 }
-	
+
 void BigInteger::operator -- ()
 {
 	if(isZero())
@@ -194,7 +187,7 @@ void BigInteger::operator -- ()
 		storage[0]--;
 
 	// wrap for all the carries
-	for(std::vector<int>::size_type index = 1; index<storage.size(); index++) 
+	for(std::vector<int>::size_type index = 1; index<storage.size(); index++)
 	{
 		if(storage[index]<carry)
 		{
@@ -266,15 +259,15 @@ BigInteger& BigInteger::operator -= (const BigInteger& rhs)
 	//subtract(*this, rhs);
 	operator = (operator - (rhs));
 	return *this;
-}	
-BigInteger& BigInteger::operator *= (const BigInteger& rhs) 
+}
+BigInteger& BigInteger::operator *= (const BigInteger& rhs)
 {
 	//multiply(*this, rhs);
 	operator = (operator * (rhs));
 	return *this;
 }
 
-BigInteger& BigInteger::operator /= (const BigInteger& rhs) 
+BigInteger& BigInteger::operator /= (const BigInteger& rhs)
 {
 	//divide(*this, rhs);
 	operator = (operator / (rhs));
@@ -446,7 +439,7 @@ void BigInteger::add(const BigInteger& lhs, const BigInteger& rhs)
 	#ifdef DEBUG_ADD
 	std::cout << "lh_obj: " << *lh_obj << "; rh_obj: " << *rh_obj << std::endl;
 	#endif
-	
+
 	if(lhs.sign == rhs.sign)
 	{
 		// duplicate the longer one, and ignore if it's itself
@@ -455,7 +448,7 @@ void BigInteger::add(const BigInteger& lhs, const BigInteger& rhs)
 
 		BaseType carry = 0, buffer;
 		// iterate through rh_obj, add with lh_obj, and store into *this
-		for(std::vector<int>::size_type index = 0; index<rh_obj->storage.size(); index++) 
+		for(std::vector<int>::size_type index = 0; index<rh_obj->storage.size(); index++)
 		{
 			// add the carry
 			buffer = lh_obj->storage[index] + carry;
@@ -543,7 +536,7 @@ void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 	#ifdef DEBUG_SUBTRACT
 	std::cout << "lh_obj: " << *lh_obj << "; rh_obj: " << *rh_obj << std::endl;
 	#endif
-	
+
 	if(lhs.sign == rhs.sign)
 	{
 		#ifdef DEBUG_SUBTRACT
@@ -561,7 +554,7 @@ void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 		BaseType carry = 0, buffer;
 		bool needCarry;
 		// iterate through rh_obj, add with lh_obj, and store into *this
-		for(std::vector<int>::size_type index = 0; index<rh_obj->storage.size() || carry!=0; index++) 
+		for(std::vector<int>::size_type index = 0; index<rh_obj->storage.size() || carry!=0; index++)
 		{
 			buffer = lh_obj->storage[index];
 
@@ -589,7 +582,7 @@ void BigInteger::subtract(const BigInteger& lhs, const BigInteger& rhs)
 
 				buffer -= carry;
 			}
-				
+
 			// store back
 			storage[index] = buffer;
 
@@ -646,7 +639,7 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 		sign = BigInteger::ZERO;
 		return;
 	}
-	else if((lhs.sign==BigInteger::POSITIVE && rhs.sign==BigInteger::NEGATIVE) ||  
+	else if((lhs.sign==BigInteger::POSITIVE && rhs.sign==BigInteger::NEGATIVE) ||
 		    (lhs.sign==BigInteger::NEGATIVE && rhs.sign==BigInteger::POSITIVE))
 	{
 		sign = BigInteger::NEGATIVE;
@@ -681,10 +674,10 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 	unsigned int storageIndex;
 	BaseType carry = 0, buffer;
 	// start multiplying and push the result back
-	for(std::vector<unsigned int>::size_type lowerIndex = 0; lowerIndex<rh_obj->storage.size(); lowerIndex++) 
+	for(std::vector<unsigned int>::size_type lowerIndex = 0; lowerIndex<rh_obj->storage.size(); lowerIndex++)
 	{
 		storageIndex = lowerIndex;
-		for(std::vector<unsigned int>::size_type upperIndex = 0; upperIndex<lh_obj->storage.size(); upperIndex++) 
+		for(std::vector<unsigned int>::size_type upperIndex = 0; upperIndex<lh_obj->storage.size(); upperIndex++)
 		{
 			#ifdef DEBUG_MULTIPLY
 			std::cout << "upper: " << lh_obj->storage[upperIndex] << ", lower: " << rh_obj->storage[lowerIndex] << ", storage index: " << storageIndex << std::endl;
@@ -722,7 +715,7 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 			storageIndex++;
 		}
 
-		
+
 		if(carry > 0)
 			storage.push_back(carry);
 	}
@@ -744,7 +737,7 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 	std::cout << "divide() called" << std::endl;
 	#endif
 
-	if (rhs.isZero()) 
+	if (rhs.isZero())
 		throw "BigInteger::divide -> divide by zero";
 
 	#ifdef DEBUG_DIVIDE
@@ -762,7 +755,7 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		return;
 	}
 
-	BigInteger result(0), temp(0), lh_buf(lhs), rh_buf(rhs);
+	BigInteger result(0), temp, lh_buf(lhs), rh_buf(rhs);
 
 	// set the sign, and have lh_buf and rh_buf as positive
 	if(lh_buf.sign==rh_buf.sign)
@@ -795,12 +788,12 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 			#ifdef DEBUG_DIVIDE
 			std::cout << "rh_buf" << std::endl;
 			#endif
-			
+
 			-rh_buf;
 		}
 
 		sign = BigInteger::NEGATIVE;
-	}	
+	}
 
 	#ifdef DEBUG_DIVIDE
 	std::cout << "variable initialized" << std::endl;
@@ -820,27 +813,19 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		std::cout << "==>m using magnifier " << converted_magnifier << std::endl;
 		#endif
 
+		// reset the template value
+		temp = 1;
+
 		if(magnifier_magnitude == 0)
-		{
-			temp++;
 			magnifier_magnitude--;
-		}
 		else
 		{
-			for(; rh_buf*converted_magnifier <= lh_buf; )
-			{
-				rh_buf *= converted_magnifier;
-					
-				// turn the temporary result into 1 for magnification
-				if(temp.isZero())
-					temp++;
-				
+			for(; rh_buf*converted_magnifier <= lh_buf; rh_buf *= converted_magnifier)
 				temp *= converted_magnifier;
-			}
 
-			if(temp.isZero())
+			if(temp==CONSTANT_1)
 			{
-				// rh_buf is to large for this magnification rate
+				// rh_buf is too large for this magnification rate
 				magnifier_magnitude--;
 				continue;
 			}
@@ -851,26 +836,24 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		std::cout << "...rh_buf: " << rh_buf << std::endl;
 		#endif
 
-		for(; (lh_buf-rh_buf) >= CONSTANT_0; )
+		for(; lh_buf.sign==BigInteger::POSITIVE; lh_buf -= rh_buf)
 		{
 			#ifdef DEBUG_DIVIDE
-			std::cout << "> loop head" << std::endl;
+			std::cout << "> in the loop" << std::endl;
 			std::cout << "...lh_buf: " << lh_buf << std::endl;
 			std::cout << "...rh_buf: " << rh_buf << std::endl;
 			std::cout << "...temp  : " << temp << std::endl;
 			std::cout << "...result: " << result << std::endl;
 			#endif
 
-			lh_buf -= rh_buf;
 			result += temp;
+		}
 
-			#ifdef DEBUG_DIVIDE
-			std::cout << "> loop tail" << std::endl;
-			std::cout << "...lh_buf: " << lh_buf << std::endl;
-			std::cout << "...rh_buf: " << rh_buf << std::endl;
-			std::cout << "...temp  : " << temp << std::endl;
-			std::cout << "...result: " << result << std::endl;
-			#endif
+		// back off
+		if(lh_buf.sign == BigInteger::NEGATIVE)
+		{
+			lh_buf += rh_buf;
+			result -= temp;
 		}
 
 		// reset rh_buf(with toggled sign) and temporary result
@@ -971,6 +954,7 @@ void BigInteger::removeTrailingZeros()
 	storage.shrink_to_fit();
 }
 
+/*
 int main()
 {
 	BigInteger a("12345"), b("678");
@@ -990,3 +974,4 @@ int main()
 
 	return 0;
 }
+*/
