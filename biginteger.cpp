@@ -688,13 +688,9 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 			buffer %= BigInteger::Base;
 
 			if(storageIndex < storage.size())
-			{
 				storage[storageIndex] = buffer;
-			}
 			else
-			{
 				storage.push_back(buffer);
-			}
 		}
 
 		if(carry != 0)
