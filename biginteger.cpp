@@ -862,7 +862,10 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 
 void BigInteger::modulus(const BigInteger& lhs, const BigInteger& rhs)
 {
-	operator = (lhs - rhs * (lhs/rhs));
+	if(compareMagnitude(lhs, rhs) == BigInteger::LESS)
+		operator = (lhs);
+	else
+		operator = (lhs - rhs * (lhs/rhs));
 }
 
 void BigInteger::karatsuba(const BigInteger& lhs, const BigInteger& rhs)
@@ -904,17 +907,16 @@ BigInteger::Compare BigInteger::compareMagnitude(const BigInteger& lhs, const Bi
 		return BigInteger::LESS;
 	else
 	{
-		BaseType lh_group, rh_group;
-		lh_group = lhs.storage.back();
-		rh_group = rhs.storage.back();
+		for(std::vector<int>::size_type index = lhs.storage.size()-1; index>=0; index--)
+		{
+			if(lhs.storage[index] > rhs.storage[index])
+				return BigInteger::GREATER;
+			else if(lhs.storage[index] < rhs.storage[index])
+				return BigInteger::LESS;
+		}
 
-		if(lh_group > rh_group)
-			return BigInteger::GREATER;
-		else if(lh_group < rh_group)
-			return BigInteger::LESS;
+		return EQUAL;
 	}
-
-	return EQUAL;
 }
 
 bool BigInteger::isZero() const
@@ -936,7 +938,7 @@ void BigInteger::removeTrailingZeros()
 
 int main()
 {
-	BigInteger a("123345234654362564567"), b("12343453454353453423455");
+	BigInteger a("5094478509788959473103748"), b("5657975189777489289138731");
 
 	std::cout << "a:\t" << a << std::endl;
 	std::cout << "b:\t" << b << std::endl;
