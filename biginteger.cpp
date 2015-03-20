@@ -677,47 +677,31 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 	for(std::vector<unsigned int>::size_type lowerIndex = 0; lowerIndex<rh_obj->storage.size(); lowerIndex++)
 	{
 		storageIndex = lowerIndex;
-		for(std::vector<unsigned int>::size_type upperIndex = 0; upperIndex<lh_obj->storage.size(); upperIndex++)
+		for(std::vector<unsigned int>::size_type upperIndex = 0; upperIndex<lh_obj->storage.size(); upperIndex++, storageIndex++)
 		{
-			#ifdef DEBUG_MULTIPLY
-			std::cout << "upper: " << lh_obj->storage[upperIndex] << ", lower: " << rh_obj->storage[lowerIndex] << ", storage index: " << storageIndex << std::endl;
-			#endif
-
 			buffer = lh_obj->storage[upperIndex] * rh_obj->storage[lowerIndex] + carry;
+
+			if(storageIndex < storage.size())
+				buffer += storage[storageIndex];
 
 			carry = buffer/BigInteger::Base;
 			buffer %= BigInteger::Base;
 
-			#ifdef DEBUG_MULTIPLY
-			std::cout << "multiplied group: " << buffer << ", carry: " << carry << std::endl;
-			#endif
-
 			if(storageIndex < storage.size())
 			{
-				#ifdef DEBUG_MULTIPLY
-				std::cout << "new group can tuck inside current storage" << std::endl;
-				#endif
-
-				storage[storageIndex] += buffer;
-				carry += storage[storageIndex]/BigInteger::Base;
-				storage[storageIndex] %= BigInteger::Base;
+				storage[storageIndex] = buffer;
 			}
 			else
 			{
-				#ifdef DEBUG_MULTIPLY
-				std::cout << "new group needs to push back into the storage" << std::endl;
-				#endif
-
 				storage.push_back(buffer);
 			}
-
-			// increment the storage group
-			storageIndex++;
 		}
 
-
-		if(carry > 0)
+		if(carry != 0)
+		{
 			storage.push_back(carry);
+			carry = 0;
+		}
 	}
 
 	// using karatsuba algorithm
@@ -954,10 +938,9 @@ void BigInteger::removeTrailingZeros()
 	storage.shrink_to_fit();
 }
 
-/*
 int main()
 {
-	BigInteger a("12345"), b("678");
+	BigInteger a("123345234654362564567"), b("12343453454353453423455");
 
 	std::cout << "a:\t" << a << std::endl;
 	std::cout << "b:\t" << b << std::endl;
@@ -965,13 +948,8 @@ int main()
 	std::cout << "a+b:\t" << (a+b) << std::endl;
 	std::cout << "a-b:\t" << (a-b) << std::endl;
 	std::cout << "a*b:\t" << (a*b) << std::endl;
-	std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 	std::cout << "a/b:\t" << (a/b) << std::endl;
-	std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
-	std::cout << "Elapsed " << time_span.count() << " seconds." << std::endl;
 	std::cout << "a%b:\t" << (a%b) << std::endl;
 
 	return 0;
 }
-*/

@@ -17,7 +17,7 @@ public:
 	typedef unsigned int BaseType;
 	static const unsigned int Base = 10000;
 	// magnitude of the Base value, currently hard coded
-	static const unsigned int BaseMagnitude10 = 4; 
+	static const unsigned int BaseMagnitude10 = 4;
 
 	//
 	// actual functions
@@ -42,7 +42,7 @@ public:
 	void operator ++ (int);
 	void operator -- ();
 	void operator -- (int);
-	
+
 	// binary operator: arithmetic
 	const BigInteger operator + (const BigInteger&) const;
 	const BigInteger operator - (const BigInteger&) const;
