@@ -100,17 +100,6 @@ BigInteger::BigInteger(const std::vector<BigInteger::BaseType>& input)
 // unary operator
 void BigInteger::operator - ()
 {
-	/*
-	BigInteger result = *this;
-
-	if(result.sign == POSITIVE)
-		result.sign = NEGATIVE;
-	else if(result.sign == NEGATIVE)
-		result.sign = POSITIVE;
-
-	return result;
-	*/
-
 	if(sign == BigInteger::POSITIVE)
 		sign = BigInteger::NEGATIVE;
 	else if(sign == BigInteger::NEGATIVE)
@@ -129,7 +118,7 @@ void BigInteger::operator ++ ()
 	if(isZero())
 	{
 		// 0 -> 1
-		operator = (10);
+		operator = (1);
 		return;
 	}
 	else if(sign==BigInteger::NEGATIVE && storage.size()==1 && storage[0]==1)
@@ -187,7 +176,7 @@ void BigInteger::operator -- ()
 		storage[0]--;
 
 	// wrap for all the carries
-	for(std::vector<int>::size_type index = 1; index<storage.size(); index++)
+	for(int index = 1; index<storage.size(); index++)
 	{
 		if(storage[index]<carry)
 		{
@@ -467,11 +456,7 @@ void BigInteger::add(const BigInteger& lhs, const BigInteger& rhs)
 		for(std::vector<int>::size_type index = 0; index<rh_obj->storage.size(); index++)
 		{
 			// add the carry
-			buffer = lh_obj->storage[index] + carry;
-
-			// perform the actual addition
-			//if(index<rh_obj->storage.size())
-				buffer += rh_obj->storage[index];
+			buffer = lh_obj->storage[index] + rh_obj->storage[index] + carry;
 
 			// wrap the digit
 			carry = buffer/BigInteger::Base;
@@ -687,13 +672,13 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 	std::cout << "storage space reserve complete" << std::endl;
 	#endif
 
-	unsigned int storageIndex;
+	int storageIndex, lh_size = lh_obj->storage.size(), rh_size = rh_obj->storage.size();
 	BaseType carry = 0, buffer;
 	// start multiplying and push the result back
-	for(std::vector<unsigned int>::size_type lowerIndex = 0; lowerIndex<rh_obj->storage.size(); lowerIndex++)
+	for(int lowerIndex = 0; lowerIndex<rh_size; lowerIndex++)
 	{
 		storageIndex = lowerIndex;
-		for(std::vector<unsigned int>::size_type upperIndex = 0; upperIndex<lh_obj->storage.size(); upperIndex++, storageIndex++)
+		for(int upperIndex = 0; upperIndex<lh_size; upperIndex++)
 		{
 			buffer = lh_obj->storage[upperIndex] * rh_obj->storage[lowerIndex] + carry;
 
@@ -707,6 +692,8 @@ void BigInteger::multiply(const BigInteger& lhs, const BigInteger& rhs)
 				storage[storageIndex] = buffer;
 			else
 				storage.push_back(buffer);
+
+			storageIndex++;
 		}
 
 		if(carry != 0)
@@ -747,7 +734,7 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		std::cout << "direct output 0, due to (0/b) or (a/b while a<b)" << std::endl;
 		#endif
 
-		sign = BigInteger::ZERO;
+		operator = (0);
 		return;
 	}
 
@@ -852,14 +839,8 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		std::cout << "...temp  : " << temp << std::endl;
 		std::cout << "...result: " << result << std::endl;
 		#endif
-/*
-		if(lh_buf.sign == BigInteger::NEGATIVE)
-		{
-			// back off, since subtracted too much
-			lh_buf += rh_buf;
-			result -= temp;
-		}
-		else*/ if(lh_buf.isZero())
+
+		if(lh_buf.isZero())
 		{
 			// divided completely, quit the loop immediately
 			break;
