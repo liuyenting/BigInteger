@@ -54,7 +54,9 @@ public:
 	BigInteger& operator += (const BigInteger&);
 	BigInteger& operator -= (const BigInteger&);
 	BigInteger& operator *= (const BigInteger&);
+	BigInteger& operator *= (const int&);
 	BigInteger& operator /= (const BigInteger&);
+	BigInteger& operator /= (const int&);
 	BigInteger& operator %= (const BigInteger&);
 
 	// binary operator: comparison

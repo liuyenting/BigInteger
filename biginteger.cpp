@@ -267,10 +267,26 @@ BigInteger& BigInteger::operator *= (const BigInteger& rhs)
 	return *this;
 }
 
+BigInteger& BigInteger::operator *= (const int& rhs)
+{
+	BigInteger rh_obj(rhs);
+
+	operator = (operator * (rh_obj));
+	return *this;
+}
+
 BigInteger& BigInteger::operator /= (const BigInteger& rhs)
 {
 	//divide(*this, rhs);
 	operator = (operator / (rhs));
+	return *this;
+}
+
+BigInteger& BigInteger::operator /= (const int& rhs)
+{
+	BigInteger rh_obj(rhs);
+
+	operator = (operator / (rh_obj));
 	return *this;
 }
 
@@ -816,7 +832,7 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		std::cout << "...rh_buf: " << rh_buf << std::endl;
 		#endif
 
-		for(; lh_buf.sign==BigInteger::POSITIVE; lh_buf -= rh_buf)
+		for(; (lh_buf-rh_buf)>=CONSTANT_0; lh_buf -= rh_buf)
 		{
 			#ifdef DEBUG_DIVIDE
 			std::cout << "> in the loop" << std::endl;
@@ -829,13 +845,21 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 			result += temp;
 		}
 
+		#ifdef DEBUG_DIVIDE
+		std::cout << "> outside the loop, before back off" << std::endl;
+		std::cout << "...lh_buf: " << lh_buf << std::endl;
+		std::cout << "...rh_buf: " << rh_buf << std::endl;
+		std::cout << "...temp  : " << temp << std::endl;
+		std::cout << "...result: " << result << std::endl;
+		#endif
+/*
 		if(lh_buf.sign == BigInteger::NEGATIVE)
 		{
 			// back off, since subtracted too much
 			lh_buf += rh_buf;
 			result -= temp;
 		}
-		else if(lh_buf.isZero())
+		else*/ if(lh_buf.isZero())
 		{
 			// divided completely, quit the loop immediately
 			break;
@@ -845,7 +869,6 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		Sign signBackup = rh_buf.sign;
 		rh_buf = rhs;
 		rh_buf.sign = signBackup;
-		temp = CONSTANT_0;
 
 		#ifdef DEBUG_DIVIDE
 		std::cout << "> after reset" << std::endl;
@@ -867,10 +890,32 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 
 void BigInteger::modulus(const BigInteger& lhs, const BigInteger& rhs)
 {
+	#ifdef DEBUG_MODULUS
+	std::cout << "=====" << std::endl;
+	std::cout << "modulus() called" << std::endl;
+	#endif
+
 	if(compareMagnitude(lhs, rhs) == BigInteger::LESS)
+	{
+		#ifdef DEBUG_MODULUS
+		std::cout << "direct output" << std::endl;
+		#endif
+
 		operator = (lhs);
+	}
 	else
+	{
+		#ifdef DEBUG_MODULUS
+		std::cout << "lhs/rhs = " << (lhs/rhs) << std::endl;
+		std::cout << "rhs*(lhs/rhs) = " << (rhs*(lhs/rhs)) << std::endl;
+		#endif
+
 		operator = (lhs - rhs * (lhs/rhs));
+	}
+
+	#ifdef DEBUG_MODULUS
+	std::cout << "=====" << std::endl;
+	#endif
 }
 
 void BigInteger::karatsuba(const BigInteger& lhs, const BigInteger& rhs)
@@ -941,20 +986,16 @@ void BigInteger::removeTrailingZeros()
 	storage.shrink_to_fit();
 }
 
+/*
 int main()
 {
-	BigInteger a("1"), b("221");
+	BigInteger a("46402872302120421309227866370370038942205512730179344432450851287125219636738827243490697115360015051621511337952166357606805065284316125281129"), b("623534128701003202507730859098886025208451697057836689285915149400736244788017209778312584655777544994844602035309329405464014737484311");
 
 	std::cout << "a:\t" << a << std::endl;
 	std::cout << "b:\t" << b << std::endl;
 
-	std::cout << "a==1:\t" << (a==CONSTANT_1) << std::endl;
-
-	std::cout << "a+b:\t" << (a+b) << std::endl;
-	std::cout << "a-b:\t" << (a-b) << std::endl;
-	std::cout << "a*b:\t" << (a*b) << std::endl;
-	std::cout << "a/b:\t" << (a/b) << std::endl;
 	std::cout << "a%b:\t" << (a%b) << std::endl;
 
 	return 0;
 }
+*/
