@@ -31,8 +31,6 @@ public:
 	BigInteger(const int&);
 	BigInteger(const std::string&);
 	BigInteger(const BigInteger&);
-	BigInteger(const std::vector<BigInteger::BaseType>&);
-
 
 	// unary operator
 	void operator - ();

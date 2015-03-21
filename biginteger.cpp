@@ -79,24 +79,6 @@ BigInteger::BigInteger(const BigInteger& input)
 	operator = (input);
 }
 
-BigInteger::BigInteger(const std::vector<BigInteger::BaseType>& input)
-{
-	std::cout << "received a vector with size " << input.size() << std::endl;
-
-	// assume the sign is positive
-	sign = BigInteger::POSITIVE;
-
-	// direct copy the vector
-	std::vector<BigInteger::BaseType>::const_iterator iterator;
-	for(iterator = input.begin(); iterator != input.end(); ++iterator)
-		storage.push_back(*iterator);
-
-	std::cout << "copy complete" << std::endl;
-	std::cout << "current storage size " << storage.size() << std::endl;
-
-	operator << (std::cout, *this);
-}
-
 // unary operator
 void BigInteger::operator - ()
 {
