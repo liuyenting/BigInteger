@@ -240,9 +240,22 @@ BigInteger& BigInteger::operator *= (const BigInteger& rhs)
 
 BigInteger& BigInteger::operator *= (const int& rhs)
 {
-	BigInteger rh_obj(rhs);
+	int maxIndex = storage.size(), carry = 0;
+	for(int index = 0; index < maxIndex; index++)
+	{
+		storage[index] *= rhs + carry;
+		carry = storage[index]/BigInteger::Base;
+		storage[index] %= BigInteger::Base;
+	}
 
+	if(carry != 0)
+		storage.push_back(carry);
+
+	/*
+	BigInteger rh_obj(rhs);
 	operator = (operator * (rh_obj));
+	*/
+	
 	return *this;
 }
 
@@ -255,9 +268,26 @@ BigInteger& BigInteger::operator /= (const BigInteger& rhs)
 
 BigInteger& BigInteger::operator /= (const int& rhs)
 {
-	BigInteger rh_obj(rhs);
+	if(rhs==2)
+	{
+		int carry = 0;
+		for(int index = storage.size()-1; index >= 0; index--)
+		{
+			if(carry == 1)
+				storage[index] += BigInteger::Base;
 
-	operator = (operator / (rh_obj));
+			carry = storage[index]%2;
+			storage[index] /= 2;
+		}
+
+		removeTrailingZeros();
+	}
+	else
+	{
+		BigInteger rh_obj(rhs);
+		operator = (operator / (rh_obj));
+	}
+	
 	return *this;
 }
 
