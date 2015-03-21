@@ -94,6 +94,4 @@ private:
 	void removeTrailingZeros();
 };
 
-static BigInteger CONSTANT_1(1);
-
 #endif

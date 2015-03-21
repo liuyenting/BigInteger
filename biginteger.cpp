@@ -821,10 +821,14 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 			magnifier_magnitude--;
 		else
 		{
-			for(; rh_buf*converted_magnifier <= lh_buf; rh_buf *= converted_magnifier)
+			bool multiplied;
+			for(multiplied = false; rh_buf*converted_magnifier <= lh_buf; rh_buf *= converted_magnifier)
+			{
 				temp *= converted_magnifier;
+				multiplied = true;
+			}
 
-			if(temp==CONSTANT_1)
+			if(multiplied)
 			{
 				// rh_buf is too large for this magnification rate
 				magnifier_magnitude--;
