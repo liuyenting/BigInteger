@@ -4,8 +4,6 @@
 #include <iterator>
 #include <iomanip>
 
-#include <chrono>
-
 #include "biginteger.h"
 
 //
@@ -287,7 +285,7 @@ BigInteger& BigInteger::operator /= (const int& rhs)
 		BigInteger rh_obj(rhs);
 		operator = (operator / (rh_obj));
 	}
-	
+
 	return *this;
 }
 
@@ -978,17 +976,3 @@ void BigInteger::removeTrailingZeros()
 
 	storage.shrink_to_fit();
 }
-
-/*
-int main()
-{
-	BigInteger a("46402872302120421309227866370370038942205512730179344432450851287125219636738827243490697115360015051621511337952166357606805065284316125281129"), b("623534128701003202507730859098886025208451697057836689285915149400736244788017209778312584655777544994844602035309329405464014737484311");
-
-	std::cout << "a:\t" << a << std::endl;
-	std::cout << "b:\t" << b << std::endl;
-
-	std::cout << "a%b:\t" << (a%b) << std::endl;
-
-	return 0;
-}
-*/
