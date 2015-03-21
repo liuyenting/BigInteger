@@ -133,7 +133,7 @@ void BigInteger::operator ++ ()
 
 	// wrap for all the carries
 	BaseType carry = 0;
-	for(std::vector<int>::size_type index = 0; index<storage.size(); index++)
+	for(int index = 0; index<storage.size(); index++)
 	{
 		storage[index] += carry;
 		carry = storage[index]/BigInteger::Base;
@@ -343,6 +343,7 @@ BigInteger& BigInteger::operator = (const int& rhs)
 
 	// empty the storage
 	storage.clear();
+	storage.reserve(3);
 
 	// register the sign of default value
 	if(temp == 0)
@@ -738,7 +739,9 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		return;
 	}
 
-	BigInteger result, temp, lh_buf(lhs), rh_buf(rhs);
+	BigInteger /*result,*/ temp, lh_buf(lhs), rh_buf(rhs);
+	operator = (0);
+	Sign signBackup = rh_buf.sign;
 
 	// set the sign, and have lh_buf and rh_buf as positive
 	if(lh_buf.sign==rh_buf.sign)
@@ -783,6 +786,7 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 	#endif
 
 	int magnifier_magnitude = static_cast<int>(BigInteger::BaseMagnitude10), magnifier;
+	//int magnifier_magnitude = lh_buf.getPreciseMagnitude() - rh_buf.getPreciseMagnitude(), magnifier;
 
 	// group based elimination
 	while(magnifier_magnitude>=0)
@@ -798,6 +802,10 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 
 		// reset the template value
 		temp = 1;
+
+		// reset rh_buf(with toggled sign) and temporary result
+		rh_buf = rhs;
+		rh_buf.sign = signBackup;
 
 		if(magnifier_magnitude == 0)
 			magnifier_magnitude--;
@@ -819,7 +827,7 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 		std::cout << "...rh_buf: " << rh_buf << std::endl;
 		#endif
 
-		for(; (lh_buf-rh_buf)>=CONSTANT_0; lh_buf -= rh_buf)
+		for(; lh_buf >= rh_buf; lh_buf -= rh_buf)
 		{
 			#ifdef DEBUG_DIVIDE
 			std::cout << "> in the loop" << std::endl;
@@ -829,7 +837,8 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 			std::cout << "...result: " << result << std::endl;
 			#endif
 
-			result += temp;
+			/*result += temp;*/
+			operator += (temp);
 		}
 
 		#ifdef DEBUG_DIVIDE
@@ -846,23 +855,14 @@ void BigInteger::divide(const BigInteger& lhs, const BigInteger& rhs)
 			break;
 		}
 
-		// reset rh_buf(with toggled sign) and temporary result
-		Sign signBackup = rh_buf.sign;
-		rh_buf = rhs;
-		rh_buf.sign = signBackup;
-
-		#ifdef DEBUG_DIVIDE
-		std::cout << "> after reset" << std::endl;
-		std::cout << "...lh_buf: " << lh_buf << std::endl;
-		std::cout << "...rh_buf: " << rh_buf << std::endl;
-		std::cout << "...temp  : " << temp << std::endl;
-		std::cout << "...result: " << result << std::endl;
-		#endif
+		
 	}
 
 	// copy back the sign
+	/*
 	result.sign = sign;
 	operator = (result);
+	*/
 
 	#ifdef DEBUG_DIVIDE
 	std::cout << "=====" << std::endl;
